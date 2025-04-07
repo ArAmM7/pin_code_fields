@@ -1,4 +1,4 @@
-part of pin_code_text_fields;
+part of '../../pin_code_text_fields.dart';
 
 /// A private widget that represents the row of pin code cells.
 class _PinCodeFieldRow extends StatelessWidget {

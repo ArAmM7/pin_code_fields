@@ -1,4 +1,4 @@
-part of pin_code_text_fields; // Use library name
+part of '../../pin_code_text_fields.dart'; // Use library name
 
 // --- PinTheme class remains the same as provided in your original code ---
 // (Keep the full PinTheme class definition here)
@@ -113,7 +113,7 @@ class PinTheme {
     List<BoxShadow>? activeBoxShadow,
     List<BoxShadow>? inActiveBoxShadow,
   }) {
-    final defaultValues = PinTheme.defaults();
+    const defaultValues = PinTheme.defaults();
     return PinTheme.defaults(
       activeColor: activeColor ?? defaultValues.activeColor,
       activeFillColor: activeFillColor ?? defaultValues.activeFillColor,

@@ -1,4 +1,4 @@
-part of pin_code_text_fields; // Use library name
+part of '../../pin_code_text_fields.dart'; // Use library name
 
 // --- Gradiented class remains the same ---
 class Gradiented extends StatelessWidget {

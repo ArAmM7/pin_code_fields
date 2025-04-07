@@ -184,8 +184,6 @@ class CustomExample extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -318,7 +316,7 @@ class PinCodeDemoPage extends StatefulWidget {
   const PinCodeDemoPage({super.key});
 
   @override
-  _PinCodeDemoPageState createState() => _PinCodeDemoPageState();
+  State<PinCodeDemoPage> createState() => _PinCodeDemoPageState();
 }
 
 class _PinCodeDemoPageState extends State<PinCodeDemoPage> {
@@ -363,11 +361,13 @@ class _PinCodeDemoPageState extends State<PinCodeDemoPage> {
       appBar: AppBar(
         title: const Text('PIN Code Examples'),
       ),
-      body: Column( // Use Column: Dropdown, Example, Controls
+      body: Column(
+        // Use Column: Dropdown, Example, Controls
         children: [
           // --- Example Selector Dropdown ---
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+            padding:
+                const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
             child: DropdownButton<ExampleType>(
               value: _selectedExample,
               isExpanded: true,
@@ -391,9 +391,12 @@ class _PinCodeDemoPageState extends State<PinCodeDemoPage> {
           const Divider(),
 
           // --- Selected Example Area ---
-          Expanded( // Allow the example to take available space
-            child: SingleChildScrollView( // Make the example area scrollable if needed
-              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+          Expanded(
+            // Allow the example to take available space
+            child: SingleChildScrollView(
+              // Make the example area scrollable if needed
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
               child: _buildSelectedExample(),
             ),
           ),
@@ -420,11 +423,16 @@ class _PinCodeDemoPageState extends State<PinCodeDemoPage> {
   // Helper to get readable names for enum values
   String _getExampleName(ExampleType type) {
     switch (type) {
-      case ExampleType.basic: return 'Basic (Box Shape)';
-      case ExampleType.underline: return 'Underline Shape';
-      case ExampleType.circle: return 'Circle Shape (Custom Obscuring & Hint)';
-      case ExampleType.custom: return 'Custom Theme (Gradient & Separator)';
-      case ExampleType.readOnly: return 'Read-Only Example';
+      case ExampleType.basic:
+        return 'Basic (Box Shape)';
+      case ExampleType.underline:
+        return 'Underline Shape';
+      case ExampleType.circle:
+        return 'Circle Shape (Custom Obscuring & Hint)';
+      case ExampleType.custom:
+        return 'Custom Theme (Gradient & Separator)';
+      case ExampleType.readOnly:
+        return 'Read-Only Example';
     }
   }
 
@@ -480,7 +488,8 @@ class _PinCodeDemoPageState extends State<PinCodeDemoPage> {
           Chip(
             label: const Text('Obscure'),
             avatar: CircleAvatar(
-                child: Icon(_obscureText ? Icons.visibility_off : Icons.visibility)),
+                child: Icon(
+                    _obscureText ? Icons.visibility_off : Icons.visibility)),
             deleteIcon: Switch(
               value: _obscureText,
               onChanged: (bool value) => setState(() => _obscureText = value),
@@ -507,7 +516,8 @@ class _PinCodeDemoPageState extends State<PinCodeDemoPage> {
           Chip(
             label: const Text('ReadOnly'),
             avatar: CircleAvatar(
-                child: Icon(_isReadOnly ? Icons.lock_outline : Icons.lock_open)),
+                child:
+                    Icon(_isReadOnly ? Icons.lock_outline : Icons.lock_open)),
             deleteIcon: Switch(
               value: _isReadOnly,
               // Disable toggle for read-only example itself
@@ -519,7 +529,8 @@ class _PinCodeDemoPageState extends State<PinCodeDemoPage> {
             onDeleted: () {},
           ),
           // Conditionally show error buttons
-          if (_selectedExample == ExampleType.basic || _selectedExample == ExampleType.custom)
+          if (_selectedExample == ExampleType.basic ||
+              _selectedExample == ExampleType.custom)
             ElevatedButton(
               onPressed: () {
                 if (_selectedExample == ExampleType.basic) {
@@ -529,7 +540,8 @@ class _PinCodeDemoPageState extends State<PinCodeDemoPage> {
                 }
               },
               child: const Text("Trigger Error Shake"),
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.orangeAccent),
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.orangeAccent),
             ),
           ElevatedButton.icon(
             icon: const Icon(Icons.clear),

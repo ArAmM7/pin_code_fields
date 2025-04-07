@@ -1,4 +1,4 @@
-part of pin_code_text_fields;
+part of '../../pin_code_text_fields.dart';
 
 /// A private widget that handles the underlying EditableText for input handling.
 class _UnderlyingEditableText extends StatelessWidget {
@@ -68,7 +68,8 @@ class _UnderlyingEditableText extends StatelessWidget {
         LengthLimitingTextInputFormatter(length), // Ensure length limit first
         ...inputFormatters, // Add custom formatters
         if (keyboardType == TextInputType.number)
-          FilteringTextInputFormatter.digitsOnly, // Apply digit filter last if needed
+          FilteringTextInputFormatter
+              .digitsOnly, // Apply digit filter last if needed
       ],
       autofocus: false, // Handled in initState
       autocorrect: false,

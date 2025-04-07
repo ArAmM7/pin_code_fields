@@ -1,4 +1,4 @@
-part of pin_code_text_fields; // Use library name
+part of '../../pin_code_text_fields.dart'; // Use library name
 
 class CursorPainter extends CustomPainter {
   CursorPainter({this.cursorColor = Colors.black, this.cursorWidth = 2});
@@ -17,5 +17,5 @@ class CursorPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(CustomPainter old) => false;
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }

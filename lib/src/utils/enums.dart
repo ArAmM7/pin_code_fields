@@ -1,4 +1,4 @@
-part of pin_code_text_fields;
+part of '../../pin_code_text_fields.dart';
 
 enum AnimationType { scale, slide, fade, none }
 

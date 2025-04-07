@@ -1,13 +1,8 @@
 library pin_code_text_fields; // Define library name
 
 import 'dart:async';
-import 'dart:math';
-import 'dart:ui'; // For BoxHeightStyle, BoxWidthStyle if needed later
 import 'package:flutter/cupertino.dart'; // Required for cupertino controls
-import 'package:flutter/foundation.dart'; // For kIsWeb if needed
-import 'package:flutter/gestures.dart'; // For gesture details if needed
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 
 part 'src/models/pin_theme.dart';

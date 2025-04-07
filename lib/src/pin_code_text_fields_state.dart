@@ -1,4 +1,4 @@
-part of pin_code_text_fields;
+part of '../pin_code_text_fields.dart';
 
 class _PinCodeTextFieldState extends State<PinCodeTextField>
     with
@@ -43,7 +43,6 @@ class _PinCodeTextFieldState extends State<PinCodeTextField>
       .copyWith(
           color: widget.pinTheme.disabledColor) // Use disabled color for hint
       .merge(widget.hintStyle);
-  bool get _hintAvailable => widget.hintCharacter != null;
 
   @override
   void initState() {
@@ -93,7 +92,7 @@ class _PinCodeTextFieldState extends State<PinCodeTextField>
     if (widget.autoFocus) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         // Check mounted AND focus status before requesting
-        if (mounted && _focusNode != null && !_focusNode.hasFocus) {
+        if (mounted && !_focusNode.hasFocus) {
           _requestFocusSafely(); // Use the safe request method
         }
       });
@@ -104,12 +103,12 @@ class _PinCodeTextFieldState extends State<PinCodeTextField>
   void _requestFocusSafely() {
     // Ensure context is valid and widget is mounted before requesting focus
     // Check _focusNode isn't null either
-    if (mounted && _focusNode != null && _focusNode.context != null) {
+    if (mounted && _focusNode.context != null) {
       FocusScope.of(context).requestFocus(_focusNode);
-    } else if (mounted && _focusNode != null) {
+    } else if (mounted) {
       // Fallback if context isn't immediately ready after frame callback
       Future.delayed(const Duration(milliseconds: 50), () {
-        if (mounted && _focusNode != null && _focusNode.context != null) {
+        if (mounted && _focusNode.context != null) {
           FocusScope.of(context).requestFocus(_focusNode);
         }
       });
@@ -198,7 +197,7 @@ class _PinCodeTextFieldState extends State<PinCodeTextField>
     if (currentLength == widget.length && previousLength < widget.length) {
       widget.onCompleted?.call(limitedText);
       if (widget.autoDismissKeyboard) {
-        _focusNode?.unfocus();
+        _focusNode.unfocus();
       }
     }
 
@@ -229,10 +228,11 @@ class _PinCodeTextFieldState extends State<PinCodeTextField>
       });
       _blinkDebounce?.cancel();
       _blinkDebounce = Timer(widget.blinkDuration, () {
-        if (mounted)
+        if (mounted) {
           _setState(() {
             _hasBlinked = true;
           });
+        }
       });
     } else if (!widget.blinkWhenObscuring && !_hasBlinked) {
       _setState(() {
@@ -258,8 +258,6 @@ class _PinCodeTextFieldState extends State<PinCodeTextField>
       case HapticFeedbackTypes.vibrate:
         HapticFeedback.vibrate();
         break;
-      default:
-        break;
     }
   }
 
@@ -272,10 +270,10 @@ class _PinCodeTextFieldState extends State<PinCodeTextField>
 
     if (widget.autoDisposeControllers) {
       _textEditingController?.dispose();
-      _focusNode?.dispose();
+      _focusNode.dispose();
     } else {
       // Only remove listener if not disposing focus node provided externally
-      _focusNode?.removeListener(_onFocusChanged);
+      _focusNode.removeListener(_onFocusChanged);
     }
 
     super.dispose();
@@ -321,70 +319,6 @@ class _PinCodeTextFieldState extends State<PinCodeTextField>
       setState(() {});
     }
   }
-
-  // --- TextSelectionGestureDetectorBuilderDelegate Methods ---
-
-  @override
-  void onSingleTapUp(TapUpDetails details) {
-    if (widget.readOnly) return;
-    editableTextKey.currentState?.hideToolbar();
-    if (!_focusNode.hasFocus) FocusScope.of(context).requestFocus(_focusNode);
-    // Trigger custom onTap if provided
-    widget.onTap?.call();
-    // Move cursor to end
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted && !widget.readOnly) {
-        _controller.selection =
-            TextSelection.collapsed(offset: _controller.text.length);
-      }
-    });
-  }
-
-  @override
-  void onSingleLongTapStart(LongPressStartDetails details) {
-    if (selectionEnabled) {
-      editableTextKey.currentState?.showToolbar();
-    }
-  }
-
-  @override
-  void onDragSelectionStart(DragStartDetails details) {
-    if (selectionEnabled) editableTextKey.currentState?.showToolbar();
-  }
-
-  @override
-  void onDragSelectionUpdate(DragStartDetails start, DragUpdateDetails update) {
-    if (selectionEnabled) editableTextKey.currentState?.showToolbar();
-  }
-
-  @override
-  void onDragSelectionEnd(DragEndDetails details) {}
-  
-  @override
-  void onForcePressStart(ForcePressDetails details) {
-    if (selectionEnabled) editableTextKey.currentState?.showToolbar();
-  }
-
-  @override
-  void onForcePressEnd(ForcePressDetails details) {}
-  
-  @override
-  void onSecondaryTap() {
-    if (selectionEnabled) editableTextKey.currentState?.showToolbar();
-  }
-
-  @override
-  void onSecondaryTapUp(TapUpDetails details) {
-    if (selectionEnabled) editableTextKey.currentState?.showToolbar();
-  }
-
-  @override
-  void onSingleLongTapMoveUpdate(LongPressMoveUpdateDetails details) {
-    if (selectionEnabled) editableTextKey.currentState?.showToolbar();
-  }
-
-  @override
-  void onSingleLongTapEnd(LongPressEndDetails details) {}
 
   void _handleSelectionChanged(
       TextSelection selection, SelectionChangedCause? cause) {
@@ -477,8 +411,10 @@ class _PinCodeTextFieldState extends State<PinCodeTextField>
                     focusNode: _focusNode,
                     readOnly: widget.readOnly,
                     selectionEnabled: selectionEnabled,
-                    selectionControls: selectionEnabled ? selectionControls : null,
-                    contextMenuBuilder: selectionEnabled ? widget.contextMenuBuilder : null,
+                    selectionControls:
+                        selectionEnabled ? selectionControls : null,
+                    contextMenuBuilder:
+                        selectionEnabled ? widget.contextMenuBuilder : null,
                     keyboardType: widget.keyboardType,
                     inputFormatters: widget.inputFormatters,
                     textCapitalization: widget.textCapitalization,

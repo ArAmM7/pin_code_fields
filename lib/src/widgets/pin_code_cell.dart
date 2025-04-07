@@ -1,4 +1,4 @@
-part of pin_code_text_fields;
+part of '../../pin_code_text_fields.dart';
 
 /// A private widget that represents a single cell in the pin code field.
 class _PinCodeCell extends StatelessWidget {
@@ -60,7 +60,6 @@ class _PinCodeCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool isSelected = hasFocus && (index == textLength);
     final bool isFilled = index < textLength;
     final bool isCurrent = index == textLength;
     final bool isLast = index == text.length - 1;
