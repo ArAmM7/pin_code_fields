@@ -161,48 +161,53 @@ class PinCodeTextField extends StatefulWidget {
   final bool enablePinAutofill; // Kept (Needs implementation)
 
   /// Error animation duration
-  final int errorAnimationDuration; // Kept
+  final int errorAnimationDuration;
 
-  /// Whether to show cursor or not - **Kept** (Controls custom cursor visibility)
-  final bool showCursor; // Kept
+  /// Whether to show cursor or not
+  final bool showCursor;
 
   /// The color of the cursor, default to Theme.of(context).accentColor
-  final Color? cursorColor; // Kept (For custom cursor)
+  final Color? cursorColor;
 
   /// width of the cursor, default to 2
-  final double cursorWidth; // Kept (For custom cursor)
+  final double cursorWidth;
 
   /// Height of the cursor, default to FontSize + 8;
-  final double? cursorHeight; // Kept (For custom cursor)
+  final double? cursorHeight;
 
-  /// Autofill cleanup action - **Kept** (Needs Autofill integration)
-  final AutofillContextAction onAutoFillDisposeAction; // Kept
+  /// Whether to animate the cursor blinking
+  final bool animateCursor;
 
-  /// Use external [AutoFillGroup] - **REMOVED** (AutofillGroup is not used directly)
-  // final bool useExternalAutoFillGroup; // Removed
+  /// The duration of one cursor blink cycle
+  final Duration cursorBlinkDuration;
+
+  /// The curve to use for cursor blink animation
+  final Curve cursorBlinkCurve;
+
+  /// Autofill cleanup action
+  final AutofillContextAction onAutoFillDisposeAction;
 
   /// Displays a hint or placeholder in the field if it's value is empty.
-  final String? hintCharacter; // Kept
+  final String? hintCharacter;
 
   /// the style of the [hintCharacter], default is [fontSize: 20, fontWeight: FontWeight.bold]
-  final TextStyle? hintStyle; // Kept
+  final TextStyle? hintStyle;
 
   /// ScrollPadding follows the same property as TextField's ScrollPadding, default to const EdgeInsets.all(20),
-  final EdgeInsets scrollPadding; // Kept
+  final EdgeInsets scrollPadding;
 
   /// Text gradient for Pincode
-  final Gradient? textGradient; // Kept
+  final Gradient? textGradient;
 
   /// Makes the pin cells readOnly
-  final bool readOnly; // Kept (Passed to EditableText and state logic)
+  final bool readOnly;
 
   /// Enable auto unfocus
-  final bool autoUnfocus; // Kept
+  final bool autoUnfocus;
 
   /// Builds separator children
-  final IndexedWidgetBuilder? separatorBuilder; // Kept
+  final IndexedWidgetBuilder? separatorBuilder;
 
-  // --- NEW Properties from POC ---
   /// If true, the native context menu (e.g., Paste) will appear on long press.
   final bool enableContextMenu;
 
@@ -216,7 +221,6 @@ class PinCodeTextField extends StatefulWidget {
   PinCodeTextField({
     super.key,
     required this.length,
-    // Removed appContext
     this.controller,
     this.obscureText = false,
     this.obscuringCharacter = '●',
@@ -227,7 +231,6 @@ class PinCodeTextField extends StatefulWidget {
     this.onCompleted,
     this.onSubmitted,
     this.onEditingComplete,
-    // Removed backgroundColor
     this.mainAxisAlignment = MainAxisAlignment.spaceBetween,
     this.animationDuration = const Duration(milliseconds: 150),
     this.animationCurve = Curves.easeInOut,
@@ -241,7 +244,6 @@ class PinCodeTextField extends StatefulWidget {
     this.textStyle,
     this.useHapticFeedback = false,
     this.hapticFeedbackTypes = HapticFeedbackTypes.light,
-    // Removed pastedTextStyle
     this.enableActiveFill = false,
     this.textCapitalization = TextCapitalization.none,
     this.textInputAction = TextInputAction.done,
@@ -249,11 +251,8 @@ class PinCodeTextField extends StatefulWidget {
     this.autoDisposeControllers = true,
     this.errorAnimationController,
     this.beforeTextPaste,
-    // Removed showPasteConfirmationDialog & dialogConfig
     this.pinTheme = const PinTheme.defaults(),
     this.keyboardAppearance,
-    // Removed validator, onSaved, autovalidateMode
-    // Removed errorTextSpace, errorTextMargin, errorTextDirection
     this.enablePinAutofill = true, // Needs re-implementation
     this.errorAnimationDuration = 500,
     this.boxShadows,
@@ -261,16 +260,17 @@ class PinCodeTextField extends StatefulWidget {
     this.cursorColor,
     this.cursorWidth = 2,
     this.cursorHeight,
+    this.animateCursor = false, // Added
+    this.cursorBlinkDuration = const Duration(milliseconds: 500), // Added
+    this.cursorBlinkCurve = Curves.easeInOut, // Added
     this.hintCharacter,
     this.hintStyle,
     this.textGradient,
     this.readOnly = false, // Keep this, maps directly
     this.autoUnfocus = true,
     this.onAutoFillDisposeAction = AutofillContextAction.commit, // For Autofill
-    // Removed useExternalAutoFillGroup
     this.scrollPadding = const EdgeInsets.all(20),
     this.separatorBuilder,
-    // --- Added properties ---
     this.enableContextMenu = true,
     this.selectionControls,
     this.contextMenuBuilder = _defaultContextMenuBuilder, // Use static default

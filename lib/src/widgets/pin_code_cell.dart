@@ -29,6 +29,9 @@ class _PinCodeCell extends StatelessWidget {
     required this.textGradient,
     required this.blinkWhenObscuring,
     required this.hasBlinked,
+    required this.animateCursor,
+    required this.cursorBlinkDuration,
+    required this.cursorBlinkCurve,
   });
 
   final int index;
@@ -57,6 +60,9 @@ class _PinCodeCell extends StatelessWidget {
   final Gradient? textGradient;
   final bool blinkWhenObscuring;
   final bool hasBlinked;
+  final bool animateCursor;
+  final Duration cursorBlinkDuration;
+  final Curve cursorBlinkCurve;
 
   @override
   Widget build(BuildContext context) {
@@ -137,6 +143,9 @@ class _PinCodeCell extends StatelessWidget {
           textGradient: textGradient,
           blinkWhenObscuring: blinkWhenObscuring,
           hasBlinked: hasBlinked,
+          animateCursor: animateCursor,
+          cursorBlinkDuration: cursorBlinkDuration,
+          cursorBlinkCurve: cursorBlinkCurve,
         ),
       ),
     );
@@ -144,7 +153,7 @@ class _PinCodeCell extends StatelessWidget {
 }
 
 /// A private widget that represents the content of a pin code cell.
-class _PinCodeCellContent extends StatelessWidget {
+class _PinCodeCellContent extends StatefulWidget {
   const _PinCodeCellContent({
     required this.index,
     required this.text,
@@ -167,6 +176,9 @@ class _PinCodeCellContent extends StatelessWidget {
     required this.textGradient,
     required this.blinkWhenObscuring,
     required this.hasBlinked,
+    required this.animateCursor,
+    required this.cursorBlinkDuration,
+    required this.cursorBlinkCurve,
   });
 
   final int index;
@@ -190,81 +202,174 @@ class _PinCodeCellContent extends StatelessWidget {
   final Gradient? textGradient;
   final bool blinkWhenObscuring;
   final bool hasBlinked;
+  final bool animateCursor;
+  final Duration cursorBlinkDuration;
+  final Curve cursorBlinkCurve;
+
+  @override
+  State<_PinCodeCellContent> createState() => _PinCodeCellContentState();
+}
+
+class _PinCodeCellContentState extends State<_PinCodeCellContent> with SingleTickerProviderStateMixin {
+  late AnimationController _cursorController;
+  late Animation<double> _cursorAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.animateCursor) {
+      _cursorController = AnimationController(
+        vsync: this,
+        duration: widget.cursorBlinkDuration,
+      );
+      _cursorAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+        CurvedAnimation(
+          parent: _cursorController,
+          curve: widget.cursorBlinkCurve,
+        ),
+      );
+      _cursorController.repeat(reverse: true);
+    }
+  }
+
+  @override
+  void didUpdateWidget(_PinCodeCellContent oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    
+    // Handle changes to animation properties
+    if (widget.animateCursor != oldWidget.animateCursor ||
+        widget.cursorBlinkDuration != oldWidget.cursorBlinkDuration ||
+        widget.cursorBlinkCurve != oldWidget.cursorBlinkCurve) {
+      if (widget.animateCursor) {
+        _cursorController.duration = widget.cursorBlinkDuration;
+        _cursorAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+          CurvedAnimation(
+            parent: _cursorController,
+            curve: widget.cursorBlinkCurve,
+          ),
+        );
+        if (!_cursorController.isAnimating) {
+          _cursorController.repeat(reverse: true);
+        }
+      } else if (_cursorController.isAnimating) {
+        _cursorController.stop();
+      }
+    }
+    
+    // Handle focus changes
+    if (widget.hasFocus != oldWidget.hasFocus) {
+      if (widget.hasFocus && widget.animateCursor) {
+        if (!_cursorController.isAnimating) {
+          _cursorController.repeat(reverse: true);
+        }
+      } else if (!widget.hasFocus && _cursorController.isAnimating) {
+        _cursorController.stop();
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    if (widget.animateCursor) {
+      _cursorController.dispose();
+    }
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final bool isSelected = hasFocus && (index == textLength);
-    final bool isFilled = index < textLength;
+    final bool isSelected = widget.hasFocus && (widget.index == widget.textLength);
+    final bool isFilled = widget.index < widget.textLength;
 
     // Determine content based on state
     Widget content;
 
     // Determine if obscuring applies
-    bool showObscured = obscureText &&
-        (!blinkWhenObscuring ||
-            (blinkWhenObscuring && hasBlinked) ||
-            index != textLength - 1);
+    bool showObscured = widget.obscureText &&
+        (!widget.blinkWhenObscuring ||
+            (widget.blinkWhenObscuring && widget.hasBlinked) ||
+            widget.index != widget.textLength - 1);
 
     if (isFilled) {
-      if (showObscured && obscuringWidget != null) {
+      if (showObscured && widget.obscuringWidget != null) {
         // Use obscuring widget
-        content = obscuringWidget!;
+        content = widget.obscuringWidget!;
       } else {
         // Use character (obscured or plain)
-        final char = showObscured ? obscuringCharacter : text[index];
-        final style = textStyle;
-        content = textGradient != null
+        final char = showObscured ? widget.obscuringCharacter : widget.text[widget.index];
+        final style = widget.textStyle;
+        content = widget.textGradient != null
             ? Gradiented(
-                gradient: textGradient!,
+                gradient: widget.textGradient!,
                 child: Text(
                   char,
-                  key: ValueKey(char + index.toString()),
+                  key: ValueKey(char + widget.index.toString()),
                   style: style.copyWith(color: Colors.white),
                 ),
               )
             : Text(
                 char,
-                key: ValueKey(char + index.toString()),
+                key: ValueKey(char + widget.index.toString()),
                 style: style,
               );
       }
-    } else if (isSelected && showCursor && !readOnly) {
+    } else if (isSelected && widget.showCursor && !widget.readOnly) {
       // Show cursor
-      final cursorColorValue = cursorColor ??
+      final cursorColorValue = widget.cursorColor ??
           Theme.of(context).textSelectionTheme.cursorColor ??
           Theme.of(context).colorScheme.secondary;
-      final cursorHeightValue = cursorHeight ?? textStyle.fontSize! + 8;
+      final cursorHeightValue = widget.cursorHeight ?? widget.textStyle.fontSize! + 8;
 
-      content = Center(
-        child: Container(
-          width: cursorWidth,
-          height: cursorHeightValue,
-          color: cursorColorValue,
-        ),
-      );
-    } else if (hintCharacter != null) {
+      if (widget.animateCursor) {
+        // Animated cursor
+        content = AnimatedBuilder(
+          animation: _cursorAnimation,
+          builder: (context, child) {
+            return Center(
+              child: Opacity(
+                opacity: _cursorAnimation.value,
+                child: Container(
+                  width: widget.cursorWidth,
+                  height: cursorHeightValue,
+                  color: cursorColorValue,
+                ),
+              ),
+            );
+          },
+        );
+      } else {
+        // Static cursor
+        content = Center(
+          child: Container(
+            width: widget.cursorWidth,
+            height: cursorHeightValue,
+            color: cursorColorValue,
+          ),
+        );
+      }
+    } else if (widget.hintCharacter != null) {
       // Show hint character
       content = Text(
-        hintCharacter!,
-        key: ValueKey('hint_$index'),
-        style: hintStyle,
+        widget.hintCharacter!,
+        key: ValueKey('hint_${widget.index}'),
+        style: widget.hintStyle,
       );
     } else {
       // Empty cell
-      content = Text('', key: ValueKey('empty_$index'));
+      content = Text('', key: ValueKey('empty_${widget.index}'));
     }
 
     // Apply animation transition
     return AnimatedSwitcher(
-      duration: animationDuration,
-      switchInCurve: animationCurve,
-      switchOutCurve: animationCurve,
+      duration: widget.animationDuration,
+      switchInCurve: widget.animationCurve,
+      switchOutCurve: widget.animationCurve,
       transitionBuilder: (child, animation) {
-        if (animationType == AnimationType.scale) {
+        if (widget.animationType == AnimationType.scale) {
           return ScaleTransition(scale: animation, child: child);
-        } else if (animationType == AnimationType.fade) {
+        } else if (widget.animationType == AnimationType.fade) {
           return FadeTransition(opacity: animation, child: child);
-        } else if (animationType == AnimationType.none) {
+        } else if (widget.animationType == AnimationType.none) {
           return child;
         } else {
           // Slide is default

@@ -392,6 +392,9 @@ class _PinCodeTextFieldState extends State<PinCodeTextField>
                 hasBlinked: _hasBlinked,
                 mainAxisAlignment: widget.mainAxisAlignment,
                 separatorBuilder: widget.separatorBuilder,
+                animateCursor: widget.animateCursor,
+                cursorBlinkDuration: widget.cursorBlinkDuration,
+                cursorBlinkCurve: widget.cursorBlinkCurve,
               ),
 
               // Layer 2: Functionality via EditableText

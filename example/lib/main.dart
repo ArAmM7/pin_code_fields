@@ -30,7 +30,7 @@ class BasicExample extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const Text("Basic Box Shape"),
+        const Text("Basic Box Shape with Animated Cursor"),
         const SizedBox(height: 10),
         PinCodeTextField(
           length: 6,
@@ -68,6 +68,14 @@ class BasicExample extends StatelessWidget {
           onTap: () {
             print("Pressed");
           },
+          // Cursor animation properties
+          showCursor: true,
+          cursorColor: colorScheme.primary,
+          cursorWidth: 2,
+          cursorHeight: 24,
+          animateCursor: true,
+          cursorBlinkDuration: const Duration(milliseconds: 800),
+          cursorBlinkCurve: Curves.easeInOut,
         ),
       ],
     );
@@ -135,7 +143,7 @@ class CircleExample extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const Text("Circle Shape"),
+        const Text("Circle Shape with Fast Cursor Animation"),
         const SizedBox(height: 10),
         PinCodeTextField(
           length: 6,
@@ -170,6 +178,14 @@ class CircleExample extends StatelessWidget {
           hintCharacter: '-', // Optional hint for empty cells
           obscuringCharacter: '*', // Optional obscuring char
           keyboardType: TextInputType.number,
+          // Cursor animation properties with faster blinking
+          showCursor: true,
+          cursorColor: colorScheme.secondary,
+          cursorWidth: 3,
+          cursorHeight: 30,
+          animateCursor: true,
+          cursorBlinkDuration: const Duration(milliseconds: 400),
+          cursorBlinkCurve: Curves.easeIn,
         ),
       ],
     );

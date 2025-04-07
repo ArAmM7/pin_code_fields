@@ -29,6 +29,9 @@ class _PinCodeFieldRow extends StatelessWidget {
     required this.blinkWhenObscuring,
     required this.hasBlinked,
     required this.mainAxisAlignment,
+    required this.animateCursor,
+    required this.cursorBlinkDuration,
+    required this.cursorBlinkCurve,
     this.separatorBuilder,
   });
 
@@ -58,6 +61,9 @@ class _PinCodeFieldRow extends StatelessWidget {
   final bool blinkWhenObscuring;
   final bool hasBlinked;
   final MainAxisAlignment mainAxisAlignment;
+  final bool animateCursor;
+  final Duration cursorBlinkDuration;
+  final Curve cursorBlinkCurve;
   final Widget Function(BuildContext, int)? separatorBuilder;
 
   @override
@@ -103,6 +109,9 @@ class _PinCodeFieldRow extends StatelessWidget {
           textGradient: textGradient,
           blinkWhenObscuring: blinkWhenObscuring,
           hasBlinked: hasBlinked,
+          animateCursor: animateCursor,
+          cursorBlinkDuration: cursorBlinkDuration,
+          cursorBlinkCurve: cursorBlinkCurve,
         ),
       );
 
