@@ -17,12 +17,17 @@ List<BoxShadow> _defaultBoxShadow(BuildContext context) => [
       )
     ];
 
-class BasicExample extends StatelessWidget {
+class BasicExample extends StatefulWidget {
   final PinConfig config;
   final StreamController<ErrorAnimationType>? errorController;
 
   const BasicExample({super.key, required this.config, this.errorController});
 
+  @override
+  State<BasicExample> createState() => _BasicExampleState();
+}
+
+class _BasicExampleState extends State<BasicExample> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -34,11 +39,11 @@ class BasicExample extends StatelessWidget {
         const SizedBox(height: 10),
         PinCodeTextField(
           length: 6,
-          obscureText: config['obscureText'],
-          readOnly: config['readOnly'],
-          enableContextMenu: config['enableContextMenu'],
-          onChanged: config['onChanged'],
-          onCompleted: config['onCompleted'],
+          obscureText: widget.config['obscureText'] ?? false,
+          readOnly: widget.config['readOnly'] ?? false,
+          enableContextMenu: widget.config['enableContextMenu'] ?? true,
+          onChanged: widget.config['onChanged'] ?? (value) {},
+          onCompleted: widget.config['onCompleted'] ?? (value) {},
           animationType: AnimationType.fade,
           pinTheme: PinTheme(
             // --- Appearance ---
@@ -62,7 +67,7 @@ class BasicExample extends StatelessWidget {
           boxShadows: _defaultBoxShadow(context),
           animationDuration: const Duration(milliseconds: 300),
           enableActiveFill: true,
-          errorAnimationController: errorController,
+          errorAnimationController: widget.errorController,
           // controller: textEditingController, // Pass controller if needed
           keyboardType: TextInputType.number,
           onTap: () {
@@ -71,14 +76,16 @@ class BasicExample extends StatelessWidget {
           // Cursor animation properties
           showCursor: true,
           cursorColor: colorScheme.primary,
-          cursorWidth: 2,
-          cursorHeight: 24,
           animateCursor: true,
           cursorBlinkDuration: const Duration(milliseconds: 800),
           cursorBlinkCurve: Curves.easeInOut,
         ),
       ],
     );
+  }
+
+  void triggerErrorAnimation() {
+    widget.errorController?.add(ErrorAnimationType.shake);
   }
 }
 
@@ -96,11 +103,11 @@ class UnderlineExample extends StatelessWidget {
         const SizedBox(height: 10),
         PinCodeTextField(
           length: 6,
-          obscureText: config['obscureText'],
-          readOnly: config['readOnly'],
-          enableContextMenu: config['enableContextMenu'],
-          onChanged: config['onChanged'],
-          onCompleted: config['onCompleted'],
+          obscureText: config['obscureText'] ?? false,
+          readOnly: config['readOnly'] ?? false,
+          enableContextMenu: config['enableContextMenu'] ?? true,
+          onChanged: config['onChanged'] ?? (value) {},
+          onCompleted: config['onCompleted'] ?? (value) {},
           animationType: AnimationType.slide,
           pinTheme: PinTheme(
             // --- Appearance ---
@@ -125,6 +132,11 @@ class UnderlineExample extends StatelessWidget {
           animationDuration: const Duration(milliseconds: 250),
           enableActiveFill: false,
           keyboardType: TextInputType.number,
+          showCursor: true,
+          cursorColor: Theme.of(context).colorScheme.primary,
+          animateCursor: true,
+          cursorBlinkDuration: const Duration(milliseconds: 800),
+          cursorBlinkCurve: Curves.easeInOut,
         ),
       ],
     );
@@ -147,11 +159,11 @@ class CircleExample extends StatelessWidget {
         const SizedBox(height: 10),
         PinCodeTextField(
           length: 6,
-          obscureText: config['obscureText'],
-          readOnly: config['readOnly'],
-          enableContextMenu: config['enableContextMenu'],
-          onChanged: config['onChanged'],
-          onCompleted: config['onCompleted'],
+          obscureText: config['obscureText'] ?? false,
+          readOnly: config['readOnly'] ?? false,
+          enableContextMenu: config['enableContextMenu'] ?? true,
+          onChanged: config['onChanged'] ?? (value) {},
+          onCompleted: config['onCompleted'] ?? (value) {},
           animationType: AnimationType.scale,
           pinTheme: PinTheme(
             // --- Appearance ---
@@ -192,12 +204,17 @@ class CircleExample extends StatelessWidget {
   }
 }
 
-class CustomExample extends StatelessWidget {
+class CustomExample extends StatefulWidget {
   final PinConfig config;
   final StreamController<ErrorAnimationType>? errorController;
 
   const CustomExample({super.key, required this.config, this.errorController});
 
+  @override
+  State<CustomExample> createState() => _CustomExampleState();
+}
+
+class _CustomExampleState extends State<CustomExample> {
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -207,11 +224,11 @@ class CustomExample extends StatelessWidget {
         const SizedBox(height: 10),
         PinCodeTextField(
           length: 5, // Example length
-          obscureText: config['obscureText'],
-          readOnly: config['readOnly'],
-          enableContextMenu: config['enableContextMenu'],
-          onChanged: config['onChanged'],
-          onCompleted: config['onCompleted'],
+          obscureText: widget.config['obscureText'] ?? false,
+          readOnly: widget.config['readOnly'] ?? false,
+          enableContextMenu: widget.config['enableContextMenu'] ?? true,
+          onChanged: widget.config['onChanged'] ?? (value) {},
+          onCompleted: widget.config['onCompleted'] ?? (value) {},
           animationType: AnimationType.fade,
           pinTheme: PinTheme(
             // --- Appearance ---
@@ -235,14 +252,23 @@ class CustomExample extends StatelessWidget {
           boxShadows: _defaultBoxShadow(context),
           animationDuration: const Duration(milliseconds: 200),
           enableActiveFill: true,
-          errorAnimationController: errorController,
+          errorAnimationController: widget.errorController,
           keyboardType: TextInputType.number,
           separatorBuilder: (context, index) =>
               const SizedBox(width: 8), // Adds space between cells
           mainAxisAlignment: MainAxisAlignment.center, // Center the cells
+          showCursor: true,
+          cursorColor: Colors.green.shade600,
+          animateCursor: true,
+          cursorBlinkDuration: const Duration(milliseconds: 800),
+          cursorBlinkCurve: Curves.easeInOut,
         ),
       ],
     );
+  }
+
+  void triggerErrorAnimation() {
+    widget.errorController?.add(ErrorAnimationType.shake);
   }
 }
 
@@ -260,11 +286,11 @@ class ReadOnlyExample extends StatelessWidget {
         const SizedBox(height: 10),
         PinCodeTextField(
           length: 6,
-          obscureText: config['obscureText'],
+          obscureText: config['obscureText'] ?? false,
           readOnly: true, // Force read-only
-          enableContextMenu: config['enableContextMenu'],
-          onChanged: config['onChanged'],
-          onCompleted: config['onCompleted'],
+          enableContextMenu: config['enableContextMenu'] ?? true,
+          onChanged: config['onChanged'] ?? (value) {},
+          onCompleted: config['onCompleted'] ?? (value) {},
           animationType: AnimationType.none,
           controller: TextEditingController(text: "123456"), // Pre-filled
           pinTheme: PinTheme(
@@ -282,6 +308,10 @@ class ReadOnlyExample extends StatelessWidget {
           ),
           enableActiveFill: true,
           showCursor: false, // No cursor in read-only mode
+          cursorColor: Theme.of(context).colorScheme.outline,
+          animateCursor: false,
+          cursorBlinkDuration: const Duration(milliseconds: 800),
+          cursorBlinkCurve: Curves.easeInOut,
         ),
       ],
     );
@@ -343,11 +373,11 @@ class GradientExample extends StatelessWidget {
         const SizedBox(height: 12),
         PinCodeTextField(
           length: 6,
-          obscureText: config['obscureText'],
-          readOnly: config['readOnly'],
-          enableContextMenu: config['enableContextMenu'],
-          onChanged: config['onChanged'],
-          onCompleted: config['onCompleted'],
+          obscureText: config['obscureText'] ?? false,
+          readOnly: config['readOnly'] ?? false,
+          enableContextMenu: config['enableContextMenu'] ?? true,
+          onChanged: config['onChanged'] ?? (value) {},
+          onCompleted: config['onCompleted'] ?? (value) {},
           textGradient: textGradient,
           pinTheme: PinTheme(
             shape: PinCodeFieldShape.box,
@@ -369,6 +399,9 @@ class GradientExample extends StatelessWidget {
           ),
           showCursor: true,
           cursorColor: Colors.purple,
+          animateCursor: true,
+          cursorBlinkDuration: const Duration(milliseconds: 800),
+          cursorBlinkCurve: Curves.easeInOut,
         ),
         const SizedBox(height: 32),
         Text(
@@ -380,23 +413,23 @@ class GradientExample extends StatelessWidget {
           shaderCallback: (bounds) => borderGradient.createShader(bounds),
           child: PinCodeTextField(
             length: 6,
-            obscureText: config['obscureText'],
-            readOnly: config['readOnly'],
-            enableContextMenu: config['enableContextMenu'],
-            onChanged: config['onChanged'],
-            onCompleted: config['onCompleted'],
+            obscureText: config['obscureText'] ?? false,
+            readOnly: config['readOnly'] ?? false,
+            enableContextMenu: config['enableContextMenu'] ?? true,
+            onChanged: config['onChanged'] ?? (value) {},
+            onCompleted: config['onCompleted'] ?? (value) {},
             pinTheme: PinTheme(
               shape: PinCodeFieldShape.box,
               borderRadius: BorderRadius.circular(8),
               fieldHeight: 50,
               fieldWidth: 45,
               fieldOuterPadding: const EdgeInsets.symmetric(horizontal: 4),
-              activeFillColor: Colors.white,
-              inactiveFillColor: Colors.white,
-              selectedFillColor: Colors.white,
               activeColor: Colors.white, // Will be masked by gradient
               inactiveColor: Colors.white, // Will be masked by gradient
               selectedColor: Colors.white, // Will be masked by gradient
+              activeFillColor: Colors.white,
+              inactiveFillColor: Colors.white,
+              selectedFillColor: Colors.white,
               borderWidth: 2.0,
             ),
             animationType: AnimationType.fade,
@@ -410,6 +443,9 @@ class GradientExample extends StatelessWidget {
             enableActiveFill: true,
             showCursor: true,
             cursorColor: Colors.purple,
+            animateCursor: true,
+            cursorBlinkDuration: const Duration(milliseconds: 800),
+            cursorBlinkCurve: Curves.easeInOut,
           ),
         ),
         const SizedBox(height: 32),
@@ -430,17 +466,17 @@ class GradientExample extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           child: PinCodeTextField(
             length: 6,
-            obscureText: config['obscureText'],
-            readOnly: config['readOnly'],
-            enableContextMenu: config['enableContextMenu'],
-            onChanged: config['onChanged'],
-            onCompleted: config['onCompleted'],
+            obscureText: config['obscureText'] ?? false,
+            readOnly: config['readOnly'] ?? false,
+            enableContextMenu: config['enableContextMenu'] ?? true,
+            onChanged: config['onChanged'] ?? (value) {},
+            onCompleted: config['onCompleted'] ?? (value) {},
             textGradient: textGradient,
             pinTheme: PinTheme(
               shape: PinCodeFieldShape.circle,
               borderRadius: BorderRadius.circular(30),
-              fieldHeight: 50,
-              fieldWidth: 50,
+              fieldHeight: 40,
+              fieldWidth: 40,
               fieldOuterPadding: const EdgeInsets.symmetric(horizontal: 4),
               activeColor: Colors.purple,
               inactiveColor: Colors.blue.withOpacity(0.5),
@@ -461,6 +497,9 @@ class GradientExample extends StatelessWidget {
             showCursor: true,
             cursorColor: Colors.purple,
             animateCursor: true,
+            cursorBlinkDuration: const Duration(milliseconds: 800),
+            cursorBlinkCurve: Curves.easeInOut,
+            cursorHeight: 24,
           ),
         ),
       ],
@@ -518,9 +557,9 @@ class _FormValidationExampleState extends State<FormValidationExample> {
               PinCodeFormField(
                 length: 6,
                 controller: _pinController,
-                obscureText: widget.config['obscureText'],
-                readOnly: widget.config['readOnly'],
-                enableContextMenu: widget.config['enableContextMenu'],
+                obscureText: widget.config['obscureText'] ?? false,
+                readOnly: widget.config['readOnly'] ?? false,
+                enableContextMenu: widget.config['enableContextMenu'] ?? true,
                 onChanged: (value) {
                   widget.config['onChanged']?.call(value);
                   setState(() {
@@ -653,7 +692,7 @@ class _FormValidationExampleState extends State<FormValidationExample> {
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
-                          'Form submitted successfully with PIN: ${widget.config['obscureText'] ? '******' : _submittedValue}',
+                          'Form submitted successfully with PIN: ${widget.config['obscureText'] ?? false ? '******' : _submittedValue}',
                           style: TextStyle(
                             color: colorScheme.onPrimaryContainer,
                             fontWeight: FontWeight.w500,
@@ -698,11 +737,11 @@ class CustomPlaceholderExample extends StatelessWidget {
         const SizedBox(height: 12),
         PinCodeTextField(
           length: 6,
-          obscureText: config['obscureText'],
-          readOnly: config['readOnly'],
-          enableContextMenu: config['enableContextMenu'],
-          onChanged: config['onChanged'],
-          onCompleted: config['onCompleted'],
+          obscureText: config['obscureText'] ?? false,
+          readOnly: config['readOnly'] ?? false,
+          enableContextMenu: config['enableContextMenu'] ?? true,
+          onChanged: config['onChanged'] ?? (value) {},
+          onCompleted: config['onCompleted'] ?? (value) {},
           hintCharacter: "?",
           hintStyle: TextStyle(
             color: colorScheme.primary.withOpacity(0.5),
@@ -734,6 +773,9 @@ class CustomPlaceholderExample extends StatelessWidget {
           enableActiveFill: true,
           showCursor: true,
           cursorColor: colorScheme.primary,
+          animateCursor: true,
+          cursorBlinkDuration: const Duration(milliseconds: 800),
+          cursorBlinkCurve: Curves.easeInOut,
         ),
         const SizedBox(height: 32),
         Text(
@@ -743,11 +785,11 @@ class CustomPlaceholderExample extends StatelessWidget {
         const SizedBox(height: 12),
         PinCodeTextField(
           length: 6,
-          obscureText: config['obscureText'],
-          readOnly: config['readOnly'],
-          enableContextMenu: config['enableContextMenu'],
-          onChanged: config['onChanged'],
-          onCompleted: config['onCompleted'],
+          obscureText: config['obscureText'] ?? false,
+          readOnly: config['readOnly'] ?? false,
+          enableContextMenu: config['enableContextMenu'] ?? true,
+          onChanged: config['onChanged'] ?? (value) {},
+          onCompleted: config['onCompleted'] ?? (value) {},
           hintCharacter: "-",
           hintStyle: TextStyle(
             color: colorScheme.onSurface.withOpacity(0.5),
@@ -774,6 +816,9 @@ class CustomPlaceholderExample extends StatelessWidget {
           ),
           showCursor: true,
           cursorColor: colorScheme.primary,
+          animateCursor: true,
+          cursorBlinkDuration: const Duration(milliseconds: 800),
+          cursorBlinkCurve: Curves.easeInOut,
         ),
         const SizedBox(height: 32),
         Text(
@@ -784,10 +829,10 @@ class CustomPlaceholderExample extends StatelessWidget {
         PinCodeTextField(
           length: 6,
           obscureText: true, // Force obscure for this example
-          readOnly: config['readOnly'],
-          enableContextMenu: config['enableContextMenu'],
-          onChanged: config['onChanged'],
-          onCompleted: config['onCompleted'],
+          readOnly: config['readOnly'] ?? false,
+          enableContextMenu: config['enableContextMenu'] ?? true,
+          onChanged: config['onChanged'] ?? (value) {},
+          onCompleted: config['onCompleted'] ?? (value) {},
           obscuringWidget: Container(
             decoration: BoxDecoration(
               color: colorScheme.primary,
@@ -823,6 +868,9 @@ class CustomPlaceholderExample extends StatelessWidget {
           enableActiveFill: true,
           showCursor: true,
           cursorColor: colorScheme.primary,
+          animateCursor: true,
+          cursorBlinkDuration: const Duration(milliseconds: 800),
+          cursorBlinkCurve: Curves.easeInOut,
         ),
       ],
     );
@@ -878,11 +926,11 @@ class _CustomAnimationExampleState extends State<CustomAnimationExample> {
         const SizedBox(height: 24),
         PinCodeTextField(
           length: 6,
-          obscureText: widget.config['obscureText'],
-          readOnly: widget.config['readOnly'],
-          enableContextMenu: widget.config['enableContextMenu'],
-          onChanged: widget.config['onChanged'],
-          onCompleted: widget.config['onCompleted'],
+          obscureText: widget.config['obscureText'] ?? false,
+          readOnly: widget.config['readOnly'] ?? false,
+          enableContextMenu: widget.config['enableContextMenu'] ?? true,
+          onChanged: widget.config['onChanged'] ?? (value) {},
+          onCompleted: widget.config['onCompleted'] ?? (value) {},
           animationType: _selectedAnimationType,
           animationDuration: _animationDuration,
           animationCurve: _animationCurve,
@@ -1060,226 +1108,257 @@ class PinCodeTextFieldsExampleApp extends StatelessWidget {
         useMaterial3: true,
       ),
       themeMode: ThemeMode.system,
-      home: const PinCodeExamplesPage(),
+      home: const ExampleHomePage(),
     );
   }
 }
 
-class PinCodeExamplesPage extends StatefulWidget {
-  const PinCodeExamplesPage({super.key});
+class ExampleHomePage extends StatefulWidget {
+  const ExampleHomePage({super.key});
 
   @override
-  State<PinCodeExamplesPage> createState() => _PinCodeExamplesPageState();
+  State<ExampleHomePage> createState() => _ExampleHomePageState();
 }
 
-class _PinCodeExamplesPageState extends State<PinCodeExamplesPage> {
-  // --- Shared Configuration ---
+class _ExampleHomePageState extends State<ExampleHomePage> {
+  ExampleType _selectedExample = ExampleType.basic;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  // Initialize shared config with default values to avoid late initialization errors
   final Map<String, dynamic> sharedConfig = {
-    'onChanged': (String value) {
-      // print(value);
-    },
-    'onCompleted': (String value) {
-      // print("Completed: $value");
-    },
     'obscureText': false,
     'readOnly': false,
     'enableContextMenu': true,
+    'onChanged': (String value) {},
+    'onCompleted': (String value) {},
   };
 
-  // --- Example Selection ---
-  ExampleType _selectedExample = ExampleType.basic;
-
-  // --- Controllers (Specific examples might need their own) ---
+  // Error controllers for examples that need them
   final StreamController<ErrorAnimationType> _errorController =
       StreamController<ErrorAnimationType>.broadcast();
-  final TextEditingController _readOnlyController =
-      TextEditingController(text: "1234");
-
-  // --- For code display ---
-  String _currentCode = "";
+  final GlobalKey<_BasicExampleState> _basicExampleKey =
+      GlobalKey<_BasicExampleState>();
+  final GlobalKey<_CustomExampleState> _customExampleKey =
+      GlobalKey<_CustomExampleState>();
 
   @override
   void dispose() {
     _errorController.close();
-    _readOnlyController.dispose(); // Dispose controller managed here
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final isSmallScreen = MediaQuery.of(context).size.width < 600;
     final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final size = MediaQuery.of(context).size;
+    final isSmallScreen = size.width < 600;
 
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
-        title: const Text('Pin Code Text Fields'),
-        centerTitle: true,
+        title: const Text('Pin Code Text Fields Demo'),
         backgroundColor: colorScheme.primaryContainer,
         foregroundColor: colorScheme.onPrimaryContainer,
-        elevation: 0,
       ),
       body: SafeArea(
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 800),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  _buildExampleSelector(),
-                  const SizedBox(height: 24),
-                  Card(
-                    elevation: 2,
-                    margin: EdgeInsets.zero,
-                    child: Padding(
-                      padding: const EdgeInsets.all(24.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            _getExampleName(_selectedExample),
-                            style: Theme.of(context).textTheme.titleLarge,
-                          ),
-                          const SizedBox(height: 16),
-                          _buildSelectedExample(),
-                        ],
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Select Example Type',
+                      style: textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 8),
+                    _buildExampleSelector(isSmallScreen),
+                    const SizedBox(height: 24),
+                    Card(
+                      elevation: 0,
+                      color: colorScheme.surfaceVariant.withOpacity(0.3),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              _getExampleTitle(_selectedExample),
+                              style: textTheme.titleLarge,
+                            ),
+                            const Divider(),
+                            const SizedBox(height: 16),
+                            ConstrainedBox(
+                              constraints: BoxConstraints(
+                                maxWidth: constraints.maxWidth,
+                                minHeight: 100,
+                              ),
+                              child: _buildExample(_selectedExample),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 24),
-                  _buildControlPanel(),
-                ],
+                    const SizedBox(height: 24),
+                    _buildControlPanel(isSmallScreen),
+                  ],
+                ),
               ),
-            ),
-          ),
+            );
+          },
         ),
       ),
     );
   }
 
-  Widget _buildExampleSelector() {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: SegmentedButton<ExampleType>(
-        segments: <ButtonSegment<ExampleType>>[
-          ButtonSegment<ExampleType>(
-            value: ExampleType.basic,
-            label: const Text('Basic'),
-            icon: const Icon(Icons.pin),
-          ),
-          ButtonSegment<ExampleType>(
-            value: ExampleType.underline,
-            label: const Text('Underline'),
-            icon: const Icon(Icons.horizontal_rule),
-          ),
-          ButtonSegment<ExampleType>(
-            value: ExampleType.circle,
-            label: const Text('Circle'),
-            icon: const Icon(Icons.circle_outlined),
-          ),
-          ButtonSegment<ExampleType>(
-            value: ExampleType.custom,
-            label: const Text('Custom'),
-            icon: const Icon(Icons.palette),
-          ),
-          ButtonSegment<ExampleType>(
-            value: ExampleType.readOnly,
-            label: const Text('Read-Only'),
-            icon: const Icon(Icons.lock),
-          ),
-          ButtonSegment<ExampleType>(
-            value: ExampleType.formValidation,
-            label: const Text('Form'),
-            icon: const Icon(Icons.check_circle),
-          ),
-          ButtonSegment<ExampleType>(
-            value: ExampleType.gradient,
-            label: const Text('Gradient'),
-            icon: const Icon(Icons.gradient),
-          ),
-          ButtonSegment<ExampleType>(
-            value: ExampleType.customPlaceholder,
-            label: const Text('Custom Placeholder'),
-            icon: const Icon(Icons.text_fields),
-          ),
-          ButtonSegment<ExampleType>(
-            value: ExampleType.customAnimation,
-            label: const Text('Custom Animation'),
-            icon: const Icon(Icons.animation),
-          ),
-        ],
-        selected: <ExampleType>{_selectedExample},
-        onSelectionChanged: (Set<ExampleType> newSelection) {
+  Widget _buildExampleSelector(bool isSmallScreen) {
+    if (isSmallScreen) {
+      // For small screens, use a dropdown
+      return DropdownButton<ExampleType>(
+        isExpanded: true,
+        value: _selectedExample,
+        onChanged: (ExampleType? value) {
+          if (value != null) {
+            setState(() {
+              _selectedExample = value;
+            });
+          }
+        },
+        items: ExampleType.values
+            .map<DropdownMenuItem<ExampleType>>((ExampleType value) {
+          return DropdownMenuItem<ExampleType>(
+            value: value,
+            child: Text(_getExampleTitle(value)),
+          );
+        }).toList(),
+      );
+    } else {
+      // For larger screens, use segmented buttons
+      return SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: SegmentedButton<ExampleType>(
+          segments: [
+            ButtonSegment<ExampleType>(
+              value: ExampleType.basic,
+              label: const Text('Basic'),
+              icon: const Icon(Icons.pin),
+            ),
+            ButtonSegment<ExampleType>(
+              value: ExampleType.underline,
+              label: const Text('Underline'),
+              icon: const Icon(Icons.horizontal_rule),
+            ),
+            ButtonSegment<ExampleType>(
+              value: ExampleType.circle,
+              label: const Text('Circle'),
+              icon: const Icon(Icons.circle_outlined),
+            ),
+            ButtonSegment<ExampleType>(
+              value: ExampleType.custom,
+              label: const Text('Custom'),
+              icon: const Icon(Icons.dashboard_customize),
+            ),
+            ButtonSegment<ExampleType>(
+              value: ExampleType.readOnly,
+              label: const Text('Read-Only'),
+              icon: const Icon(Icons.lock),
+            ),
+            ButtonSegment<ExampleType>(
+              value: ExampleType.formValidation,
+              label: const Text('Form'),
+              icon: const Icon(Icons.check_circle),
+            ),
+            ButtonSegment<ExampleType>(
+              value: ExampleType.gradient,
+              label: const Text('Gradient'),
+              icon: const Icon(Icons.gradient),
+            ),
+            ButtonSegment<ExampleType>(
+              value: ExampleType.customPlaceholder,
+              label: const Text('Custom Placeholder'),
+              icon: const Icon(Icons.text_fields),
+            ),
+            ButtonSegment<ExampleType>(
+              value: ExampleType.customAnimation,
+              label: const Text('Custom Animation'),
+              icon: const Icon(Icons.animation),
+            ),
+          ],
+          selected: <ExampleType>{_selectedExample},
+          onSelectionChanged: (Set<ExampleType> newSelection) {
+            setState(() {
+              _selectedExample = newSelection.first;
+            });
+          },
+        ),
+      );
+    }
+  }
+
+  Widget _buildControlPanel(bool isSmallScreen) {
+    final controlButtons = [
+      _buildControlButton(
+        'Toggle Obscure',
+        Icons.remove_red_eye,
+        () {
           setState(() {
-            _selectedExample = newSelection.first;
+            sharedConfig['obscureText'] =
+                !(sharedConfig['obscureText'] ?? false);
           });
         },
       ),
-    );
-  }
-
-  Widget _buildControlPanel() {
-    return Card(
-      elevation: 2,
-      margin: EdgeInsets.zero,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Controls',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: 16),
-            Wrap(
-              spacing: 16,
-              runSpacing: 16,
-              children: [
-                _buildControlButton(
-                  'Toggle Obscure',
-                  Icons.remove_red_eye,
-                  () {
-                    setState(() {
-                      sharedConfig['obscureText'] =
-                          !sharedConfig['obscureText'];
-                    });
-                  },
-                ),
-                _buildControlButton(
-                  'Toggle Read-Only',
-                  Icons.lock_outline,
-                  () {
-                    setState(() {
-                      sharedConfig['readOnly'] = !sharedConfig['readOnly'];
-                    });
-                  },
-                ),
-                _buildControlButton(
-                  'Toggle Context Menu',
-                  Icons.menu,
-                  () {
-                    setState(() {
-                      sharedConfig['enableContextMenu'] =
-                          !sharedConfig['enableContextMenu'];
-                    });
-                  },
-                ),
-                if (_selectedExample == ExampleType.basic ||
-                    _selectedExample == ExampleType.custom)
-                  _buildControlButton(
-                    'Trigger Error Shake',
-                    Icons.error_outline,
-                    () {
-                      _errorController.add(ErrorAnimationType.shake);
-                    },
-                  ),
-              ],
-            ),
-          ],
-        ),
+      _buildControlButton(
+        'Toggle Read-Only',
+        Icons.lock,
+        () {
+          setState(() {
+            sharedConfig['readOnly'] = !(sharedConfig['readOnly'] ?? false);
+          });
+        },
       ),
-    );
+      _buildControlButton(
+        'Toggle Context Menu',
+        Icons.menu,
+        () {
+          setState(() {
+            sharedConfig['enableContextMenu'] =
+                !(sharedConfig['enableContextMenu'] ?? true);
+          });
+        },
+      ),
+      if (_selectedExample == ExampleType.basic ||
+          _selectedExample == ExampleType.custom)
+        _buildControlButton(
+          'Trigger Error Shake',
+          Icons.error_outline,
+          () {
+            _triggerErrorAnimation();
+          },
+        ),
+    ];
+
+    if (isSmallScreen) {
+      // For small screens, stack buttons vertically
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: controlButtons.map((button) {
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 8.0),
+            child: button,
+          );
+        }).toList(),
+      );
+    } else {
+      // For larger screens, arrange buttons horizontally
+      return Wrap(
+        spacing: 8.0,
+        runSpacing: 8.0,
+        children: controlButtons,
+      );
+    }
   }
 
   Widget _buildControlButton(
@@ -1294,10 +1373,19 @@ class _PinCodeExamplesPageState extends State<PinCodeExamplesPage> {
     );
   }
 
-  Widget _buildSelectedExample() {
-    switch (_selectedExample) {
+  void _triggerErrorAnimation() {
+    if (_selectedExample == ExampleType.basic) {
+      _basicExampleKey.currentState?.triggerErrorAnimation();
+    } else if (_selectedExample == ExampleType.custom) {
+      _customExampleKey.currentState?.triggerErrorAnimation();
+    }
+  }
+
+  Widget _buildExample(ExampleType type) {
+    switch (type) {
       case ExampleType.basic:
         return BasicExample(
+          key: _basicExampleKey,
           config: sharedConfig,
           errorController: _errorController,
         );
@@ -1307,6 +1395,7 @@ class _PinCodeExamplesPageState extends State<PinCodeExamplesPage> {
         return CircleExample(config: sharedConfig);
       case ExampleType.custom:
         return CustomExample(
+          key: _customExampleKey,
           config: sharedConfig,
           errorController: _errorController,
         );
@@ -1323,7 +1412,7 @@ class _PinCodeExamplesPageState extends State<PinCodeExamplesPage> {
     }
   }
 
-  String _getExampleName(ExampleType type) {
+  String _getExampleTitle(ExampleType type) {
     switch (type) {
       case ExampleType.basic:
         return 'Basic (Box Shape)';

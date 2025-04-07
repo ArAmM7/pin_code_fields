@@ -211,8 +211,8 @@ class _PinCodeCellContent extends StatefulWidget {
 }
 
 class _PinCodeCellContentState extends State<_PinCodeCellContent> with SingleTickerProviderStateMixin {
-  late AnimationController _cursorController;
-  late Animation<double> _cursorAnimation;
+  AnimationController? _cursorController;
+  Animation<double>? _cursorAnimation;
 
   @override
   void initState() {
@@ -224,11 +224,11 @@ class _PinCodeCellContentState extends State<_PinCodeCellContent> with SingleTic
       );
       _cursorAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
         CurvedAnimation(
-          parent: _cursorController,
+          parent: _cursorController!,
           curve: widget.cursorBlinkCurve,
         ),
       );
-      _cursorController.repeat(reverse: true);
+      _cursorController!.repeat(reverse: true);
     }
   }
 
@@ -241,38 +241,44 @@ class _PinCodeCellContentState extends State<_PinCodeCellContent> with SingleTic
         widget.cursorBlinkDuration != oldWidget.cursorBlinkDuration ||
         widget.cursorBlinkCurve != oldWidget.cursorBlinkCurve) {
       if (widget.animateCursor) {
-        _cursorController.duration = widget.cursorBlinkDuration;
+        // Initialize controller if it doesn't exist
+        _cursorController ??= AnimationController(
+          vsync: this,
+          duration: widget.cursorBlinkDuration,
+        );
+        
+        // Update existing controller
+        _cursorController!.duration = widget.cursorBlinkDuration;
         _cursorAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
           CurvedAnimation(
-            parent: _cursorController,
+            parent: _cursorController!,
             curve: widget.cursorBlinkCurve,
           ),
         );
-        if (!_cursorController.isAnimating) {
-          _cursorController.repeat(reverse: true);
+        if (!_cursorController!.isAnimating) {
+          _cursorController!.repeat(reverse: true);
         }
-      } else if (_cursorController.isAnimating) {
-        _cursorController.stop();
+      } else {
+        // Stop and dispose controller if animation is disabled
+        _cursorController?.stop();
       }
     }
     
     // Handle focus changes
     if (widget.hasFocus != oldWidget.hasFocus) {
       if (widget.hasFocus && widget.animateCursor) {
-        if (!_cursorController.isAnimating) {
-          _cursorController.repeat(reverse: true);
+        if (!_cursorController!.isAnimating) {
+          _cursorController!.repeat(reverse: true);
         }
-      } else if (!widget.hasFocus && _cursorController.isAnimating) {
-        _cursorController.stop();
+      } else if (!widget.hasFocus && _cursorController!.isAnimating) {
+        _cursorController!.stop();
       }
     }
   }
 
   @override
   void dispose() {
-    if (widget.animateCursor) {
-      _cursorController.dispose();
-    }
+    _cursorController?.dispose();
     super.dispose();
   }
 
@@ -320,14 +326,14 @@ class _PinCodeCellContentState extends State<_PinCodeCellContent> with SingleTic
           Theme.of(context).colorScheme.secondary;
       final cursorHeightValue = widget.cursorHeight ?? widget.textStyle.fontSize! + 8;
 
-      if (widget.animateCursor) {
+      if (widget.animateCursor && _cursorAnimation != null) {
         // Animated cursor
         content = AnimatedBuilder(
-          animation: _cursorAnimation,
+          animation: _cursorAnimation!,
           builder: (context, child) {
             return Center(
               child: Opacity(
-                opacity: _cursorAnimation.value,
+                opacity: _cursorAnimation!.value,
                 child: Container(
                   width: widget.cursorWidth,
                   height: cursorHeightValue,
