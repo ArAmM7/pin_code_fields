@@ -1,0 +1,1 @@
+- Add custom cell builder to give developer full freedom if they want
