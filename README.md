@@ -29,14 +29,14 @@ Add the following to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  pin_code_text_fields: ^0.0.1
+  pin_code_fields: ^0.0.1
 ```
 
 ## Basic Usage
 
 ```dart
 import 'package:flutter/material.dart';
-import 'package:pin_code_text_fields/pin_code_text_fields.dart';
+import 'package:pin_code_fields/pin_code_fields.dart';
 
 class PinCodeExample extends StatelessWidget {
   @override
