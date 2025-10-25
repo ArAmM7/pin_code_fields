@@ -1,6 +1,6 @@
-name: pin_code_text_fields_example
-description: Example app for pin_code_text_fields package
-
+name: pin_code_fields_example
+description: Example app for pin_code_fields package
+version: "0.1.0"
 publish_to: 'none'
 
 environment:
@@ -10,7 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  pin_code_text_fields:
+  pin_code_fields:
     path: ../
 
 dev_dependencies:
