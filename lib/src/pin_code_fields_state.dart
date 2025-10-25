@@ -1,4 +1,4 @@
-part of '../pin_code_text_fields.dart';
+part of '../pin_code_fields.dart';
 
 class _PinCodeTextFieldState extends State<PinCodeTextField>
     with

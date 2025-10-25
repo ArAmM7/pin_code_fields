@@ -1,4 +1,4 @@
-part of '../../pin_code_text_fields.dart';
+part of '../../pin_code_fields.dart';
 
 /// A private widget that represents a single cell in the pin code field.
 class _PinCodeCell extends StatelessWidget {
@@ -210,7 +210,8 @@ class _PinCodeCellContent extends StatefulWidget {
   State<_PinCodeCellContent> createState() => _PinCodeCellContentState();
 }
 
-class _PinCodeCellContentState extends State<_PinCodeCellContent> with SingleTickerProviderStateMixin {
+class _PinCodeCellContentState extends State<_PinCodeCellContent>
+    with SingleTickerProviderStateMixin {
   AnimationController? _cursorController;
   Animation<double>? _cursorAnimation;
 
@@ -235,7 +236,7 @@ class _PinCodeCellContentState extends State<_PinCodeCellContent> with SingleTic
   @override
   void didUpdateWidget(_PinCodeCellContent oldWidget) {
     super.didUpdateWidget(oldWidget);
-    
+
     // Handle changes to animation properties
     if (widget.animateCursor != oldWidget.animateCursor ||
         widget.cursorBlinkDuration != oldWidget.cursorBlinkDuration ||
@@ -246,7 +247,7 @@ class _PinCodeCellContentState extends State<_PinCodeCellContent> with SingleTic
           vsync: this,
           duration: widget.cursorBlinkDuration,
         );
-        
+
         // Update existing controller
         _cursorController!.duration = widget.cursorBlinkDuration;
         _cursorAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
@@ -263,7 +264,7 @@ class _PinCodeCellContentState extends State<_PinCodeCellContent> with SingleTic
         _cursorController?.stop();
       }
     }
-    
+
     // Handle focus changes
     if (widget.hasFocus != oldWidget.hasFocus) {
       if (widget.hasFocus && widget.animateCursor) {
@@ -284,7 +285,8 @@ class _PinCodeCellContentState extends State<_PinCodeCellContent> with SingleTic
 
   @override
   Widget build(BuildContext context) {
-    final bool isSelected = widget.hasFocus && (widget.index == widget.textLength);
+    final bool isSelected =
+        widget.hasFocus && (widget.index == widget.textLength);
     final bool isFilled = widget.index < widget.textLength;
 
     // Determine content based on state
@@ -302,7 +304,9 @@ class _PinCodeCellContentState extends State<_PinCodeCellContent> with SingleTic
         content = widget.obscuringWidget!;
       } else {
         // Use character (obscured or plain)
-        final char = showObscured ? widget.obscuringCharacter : widget.text[widget.index];
+        final char = showObscured
+            ? widget.obscuringCharacter
+            : widget.text[widget.index];
         final style = widget.textStyle;
         content = widget.textGradient != null
             ? Gradiented(
@@ -324,7 +328,8 @@ class _PinCodeCellContentState extends State<_PinCodeCellContent> with SingleTic
       final cursorColorValue = widget.cursorColor ??
           Theme.of(context).textSelectionTheme.cursorColor ??
           Theme.of(context).colorScheme.secondary;
-      final cursorHeightValue = widget.cursorHeight ?? widget.textStyle.fontSize! + 8;
+      final cursorHeightValue =
+          widget.cursorHeight ?? widget.textStyle.fontSize! + 8;
 
       if (widget.animateCursor && _cursorAnimation != null) {
         // Animated cursor

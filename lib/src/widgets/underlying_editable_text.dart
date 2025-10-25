@@ -1,4 +1,4 @@
-part of '../../pin_code_text_fields.dart';
+part of '../../pin_code_fields.dart';
 
 /// A private widget that handles the underlying EditableText for input handling.
 class _UnderlyingEditableText extends StatelessWidget {

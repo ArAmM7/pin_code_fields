@@ -1,7 +1,7 @@
-library pin_code_text_fields; // Define library name
+library pin_code_fields; // Define library name
 
 import 'dart:async';
-import 'package:flutter/cupertino.dart'; // Required for cupertino controls
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -13,8 +13,8 @@ part 'src/widgets/pin_code_cell.dart';
 part 'src/widgets/pin_code_field_row.dart';
 part 'src/widgets/underlying_editable_text.dart';
 
-// Forward declare the state class
-part 'src/pin_code_text_fields_state.dart';
+// State class for PinCodeTextField
+part 'src/pin_code_fields_state.dart';
 
 /// Pin code text fields which automatically changes focus and validates
 class PinCodeTextField extends StatefulWidget {

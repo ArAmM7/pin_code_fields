@@ -4,7 +4,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:pin_code_text_fields/pin_code_text_fields.dart';
+import 'package:pin_code_fields/pin_code_fields.dart';
 
 typedef PinConfig = Map<String, dynamic>;
 

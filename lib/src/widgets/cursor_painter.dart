@@ -1,4 +1,4 @@
-part of '../../pin_code_text_fields.dart'; // Use library name
+part of '../../pin_code_fields.dart'; // Use library name
 
 class CursorPainter extends CustomPainter {
   CursorPainter({this.cursorColor = Colors.black, this.cursorWidth = 2});
