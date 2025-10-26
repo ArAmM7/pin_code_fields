@@ -151,9 +151,8 @@ class _PinCodeTextFieldState extends State<PinCodeTextField>
   void _onFocusChanged() {
     if (!_focusNode.hasFocus) {
       editableTextKey.currentState?.hideToolbar();
-      if (widget.autoDismissKeyboard) {
-        // Consider if unfocus should happen here or on complete only
-      }
+      // Note: autoDismissKeyboard only affects completion behavior (see _textEditingControllerListener)
+      // The keyboard is NOT auto-dismissed on blur, only when PIN is complete
     }
     _setState(() {}); // Rebuild for visual changes
   }
@@ -197,7 +196,8 @@ class _PinCodeTextFieldState extends State<PinCodeTextField>
     if (currentLength == widget.length && previousLength < widget.length) {
       widget.onCompleted?.call(limitedText);
       if (widget.autoDismissKeyboard) {
-        _focusNode.unfocus();
+        // Use FocusManager for more reliable keyboard dismissal
+        FocusManager.instance.primaryFocus?.unfocus();
       }
     }
 
@@ -357,13 +357,22 @@ class _PinCodeTextFieldState extends State<PinCodeTextField>
     return SlideTransition(
       // Wrap with error shake animation
       position: _offsetAnimation,
-      child: _gestureDetectorBuilder.buildGestureDetector(
-        behavior: HitTestBehavior.translucent,
-        child: SizedBox(
-          height: widget.pinTheme.fieldHeight,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
+      child: GestureDetector(
+        onTap: () {
+          // Request focus to open keyboard if not already focused
+          if (!_focusNode.hasFocus && !widget.readOnly) {
+            _requestFocusSafely();
+          }
+          // Call user's onTap callback
+          widget.onTap?.call();
+        },
+        child: _gestureDetectorBuilder.buildGestureDetector(
+          behavior: HitTestBehavior.translucent,
+          child: SizedBox(
+            height: widget.pinTheme.fieldHeight,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
               // Layer 1: Visual Cells
               _PinCodeFieldRow(
                 length: widget.length,
@@ -434,6 +443,7 @@ class _PinCodeTextFieldState extends State<PinCodeTextField>
               ),
             ],
           ),
+        ),
         ),
       ),
     );

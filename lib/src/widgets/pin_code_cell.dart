@@ -266,7 +266,7 @@ class _PinCodeCellContentState extends State<_PinCodeCellContent>
     }
 
     // Handle focus changes
-    if (widget.hasFocus != oldWidget.hasFocus) {
+    if (widget.hasFocus != oldWidget.hasFocus && _cursorController != null) {
       if (widget.hasFocus && widget.animateCursor) {
         if (!_cursorController!.isAnimating) {
           _cursorController!.repeat(reverse: true);

@@ -105,7 +105,9 @@ class PinCodeTextField extends StatefulWidget {
   /// Enabled Color fill for individual pin fields, default is [false]
   final bool enableActiveFill;
 
-  /// Auto dismiss the keyboard upon inputting the value for the last field. Default is [true]
+  /// Auto dismiss the keyboard upon inputting the value for the last field (when PIN is complete).
+  /// Note: The keyboard is NOT dismissed when the field loses focus, only on completion.
+  /// Default is [true]
   final bool autoDismissKeyboard;
 
   /// Configures how the platform keyboard will select an uppercase or lowercase keyboard.
