@@ -11,8 +11,9 @@ This document lists all features from the existing `pin_code_fields` package (v9
 | Parameter | Type | Default | Description | New Package Status |
 |-----------|------|---------|-------------|-------------------|
 | `length` | `int` | **required** | Number of PIN cells (3-8 recommended) | ✅ Implemented |
-| `controller` | `TextEditingController?` | `null` | External text controller | ✅ Implemented |
-| `focusNode` | `FocusNode?` | `null` | External focus node | ✅ Implemented |
+| `controller` | `TextEditingController?` | `null` | External text controller | ✅ Via `PinInputController` |
+| `focusNode` | `FocusNode?` | `null` | External focus node | ✅ Via `PinInputController` |
+| `pinController` | `PinInputController?` | `null` | Unified controller for text, focus, and error | ✅ **New** |
 | `enabled` | `bool` | `true` | Enable/disable the field | ✅ Implemented (as `readOnly`) |
 | `readOnly` | `bool` | `false` | Make cells read-only | ✅ Implemented |
 | `autoFocus` | `bool` | `false` | Auto-focus on mount | ✅ Implemented |
@@ -26,7 +27,7 @@ This document lists all features from the existing `pin_code_fields` package (v9
 |-----------|------|---------|-------------|-------------------|
 | `obscureText` | `bool` | `false` | Hide entered characters | ✅ Implemented |
 | `obscuringCharacter` | `String` | `'●'` | Character for obscuring | ✅ Implemented |
-| `obscuringWidget` | `Widget?` | `null` | Custom widget for obscuring | ❌ **Missing** |
+| `obscuringWidget` | `Widget?` | `null` | Custom widget for obscuring | ✅ Implemented |
 | `blinkWhenObscuring` | `bool` | `false` | Briefly show char before obscuring | ✅ Implemented |
 | `blinkDuration` | `Duration` | `500ms` | Duration to show char | ✅ Implemented |
 
@@ -93,7 +94,7 @@ This document lists all features from the existing `pin_code_fields` package (v9
 | `textStyle` | `TextStyle?` | `fontSize: 20, fontWeight: bold` | Style for PIN text | ✅ Implemented (in theme) |
 | `hintCharacter` | `String?` | `null` | Hint in empty cells | ✅ Implemented |
 | `hintStyle` | `TextStyle?` | uses `textStyle` | Style for hint | ✅ Implemented |
-| `textGradient` | `Gradient?` | `null` | Gradient for text | ❌ **Missing** |
+| `textGradient` | `Gradient?` | `null` | Gradient for text | ✅ Implemented (in theme) |
 
 ---
 
@@ -254,7 +255,8 @@ This document lists all features from the existing `pin_code_fields` package (v9
 
 ### Fully Implemented ✅
 - Core input handling
-- Text obscuring (basic)
+- Text obscuring (character and custom widget)
+- Text gradient support
 - Keyboard configuration
 - Autofill support (SMS OTP, password managers)
 - Haptic feedback
@@ -269,11 +271,10 @@ This document lists all features from the existing `pin_code_fields` package (v9
 - Separator builder
 
 ### Partially Implemented ⚠️
-- None! All major features are now implemented.
+- None! All features are implemented.
 
 ### Missing Features ❌
-1. **`obscuringWidget`** - Custom widget for obscuring (uses character only)
-2. **`textGradient`** - Gradient text effect
+- None! All features from the original package are implemented.
 
 ---
 
@@ -283,11 +284,13 @@ This document lists all features from the existing `pin_code_fields` package (v9
 
 | Old Name | New Name |
 |----------|----------|
+| `controller` | `pinController.textController` (via `PinInputController`) |
+| `focusNode` | `pinController.focusNode` (via `PinInputController`) |
 | `useHapticFeedback` | `enableHapticFeedback` |
 | `hapticFeedbackTypes` | `hapticFeedbackType` |
 | `animationType` | `entryAnimation` (in theme) |
 | `enableContextMenu` | `enablePaste` |
-| `errorAnimationController` | `errorTrigger` (Stream<void>) |
+| `errorAnimationController` | `pinController.triggerError()` (via `PinInputController`) |
 | `pinTheme.activeColor` | `theme.filledBorderColor` |
 | `pinTheme.selectedColor` | `theme.focusedBorderColor` |
 | `pinTheme.inactiveColor` | `theme.borderColor` |
@@ -301,7 +304,8 @@ This document lists all features from the existing `pin_code_fields` package (v9
 1. **Headless Architecture**: Core `PinInput` widget is now headless - you provide the UI via `builder`
 2. **Material Implementation**: `MaterialPinField` provides ready-to-use Material Design UI
 3. **Theme System**: `MaterialPinTheme` resolves colors from `ColorScheme` if not specified
-4. **Controller**: Use `PinInputController` for programmatic control (text, error, focus)
+4. **Unified Controller**: `PinInputController` consolidates `TextEditingController`, `FocusNode`, and `errorAnimationController` into a single controller
+5. **Separate Packages**: Import `pin_field_core` for core types and `pin_field_material` for Material widgets
 
 ### PinInputController (New)
 
@@ -354,8 +358,14 @@ The new headless architecture provides several advantages:
 ### For Quick Implementation
 Use `MaterialPinField` from `pin_field_material` package:
 ```dart
+import 'package:pin_field_core/pin_field_core.dart';
+import 'package:pin_field_material/pin_field_material.dart';
+
+final controller = PinInputController();
+
 MaterialPinField(
   length: 6,
+  pinController: controller,
   onCompleted: (pin) => print('PIN: $pin'),
   theme: MaterialPinTheme(
     shape: MaterialPinShape.circle,
@@ -367,6 +377,8 @@ MaterialPinField(
 ### For Custom UI
 Use `PinInput` from `pin_field_core` package with complete control:
 ```dart
+import 'package:pin_field_core/pin_field_core.dart';
+
 PinInput(
   length: 4,
   builder: (context, cells) {
@@ -386,5 +398,6 @@ PinInput(
 - **Separation of Concerns**: Input logic is completely separate from visuals
 - **Full Customization**: Build any UI you want with the headless core
 - **Material Ready**: Use the Material package for quick, beautiful implementations
+- **Unified Controller**: Single `PinInputController` manages text, focus, and error state
 - **Future-Proof**: Easy to add new design implementations (e.g., Cupertino, custom themes)
 - **Testable**: Core logic can be tested independently of UI

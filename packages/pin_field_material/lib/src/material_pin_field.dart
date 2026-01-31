@@ -45,6 +45,7 @@ class MaterialPinField extends StatefulWidget {
     this.readOnly = false,
     this.autoDismissKeyboard = true,
     this.obscureText = false,
+    this.obscuringWidget,
     this.blinkWhenObscuring = true,
     this.blinkDuration = const Duration(milliseconds: 500),
     // Haptics
@@ -121,6 +122,12 @@ class MaterialPinField extends StatefulWidget {
 
   /// Whether to obscure the entered text.
   final bool obscureText;
+
+  /// Custom widget to show when obscuring text.
+  ///
+  /// If provided, this widget will be displayed instead of the
+  /// [MaterialPinTheme.obscuringCharacter] when [obscureText] is true.
+  final Widget? obscuringWidget;
 
   /// Whether to briefly show the character before obscuring.
   final bool blinkWhenObscuring;
@@ -224,6 +231,7 @@ class _MaterialPinFieldState extends State<MaterialPinField> {
             cells: cells,
             theme: resolvedTheme,
             obscureText: widget.obscureText,
+            obscuringWidget: widget.obscuringWidget,
             hintCharacter: widget.hintCharacter,
             hintStyle: widget.hintStyle,
             separatorBuilder: widget.separatorBuilder,

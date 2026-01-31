@@ -15,6 +15,7 @@ class MaterialCellContent extends StatelessWidget {
     required this.data,
     required this.theme,
     this.obscureText = false,
+    this.obscuringWidget,
     this.hintCharacter,
     this.hintStyle,
   });
@@ -27,6 +28,9 @@ class MaterialCellContent extends StatelessWidget {
 
   /// Whether to obscure the text.
   final bool obscureText;
+
+  /// Custom widget to show when obscuring text.
+  final Widget? obscuringWidget;
 
   /// Hint character to show in empty cells.
   final String? hintCharacter;
@@ -70,16 +74,37 @@ class MaterialCellContent extends StatelessWidget {
   }
 
   Widget _buildCharacter(BuildContext context) {
-    // Determine if we should show obscured character
+    // Determine if we should show obscured content
     final shouldObscure = obscureText && !data.isBlinking;
+
+    // Use custom obscuring widget if provided
+    if (shouldObscure && obscuringWidget != null) {
+      return KeyedSubtree(
+        key: ValueKey('obscure_widget_${data.index}'),
+        child: obscuringWidget!,
+      );
+    }
+
+    // Use character (either actual or obscuring character)
     final displayChar =
         shouldObscure ? theme.obscuringCharacter : data.character!;
 
-    return Text(
+    Widget textWidget = Text(
       displayChar,
       key: ValueKey('char_${data.index}_$displayChar'),
       style: theme.textStyle,
     );
+
+    // Apply gradient if provided
+    if (theme.textGradient != null) {
+      textWidget = ShaderMask(
+        shaderCallback: (bounds) => theme.textGradient!.createShader(bounds),
+        blendMode: BlendMode.srcIn,
+        child: textWidget,
+      );
+    }
+
+    return textWidget;
   }
 
   Widget _buildCursor(BuildContext context) {

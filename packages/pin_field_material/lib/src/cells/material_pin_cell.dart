@@ -18,6 +18,7 @@ class MaterialPinCell extends StatelessWidget {
     required this.data,
     required this.theme,
     this.obscureText = false,
+    this.obscuringWidget,
     this.hintCharacter,
     this.hintStyle,
   });
@@ -30,6 +31,9 @@ class MaterialPinCell extends StatelessWidget {
 
   /// Whether to obscure the text.
   final bool obscureText;
+
+  /// Custom widget to show when obscuring text.
+  final Widget? obscuringWidget;
 
   /// Hint character to show in empty cells.
   final String? hintCharacter;
@@ -50,6 +54,7 @@ class MaterialPinCell extends StatelessWidget {
         data: data,
         theme: theme,
         obscureText: obscureText,
+        obscuringWidget: obscuringWidget,
         hintCharacter: hintCharacter,
         hintStyle: hintStyle,
       ),

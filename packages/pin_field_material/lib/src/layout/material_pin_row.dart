@@ -14,6 +14,7 @@ class MaterialPinRow extends StatelessWidget {
     required this.cells,
     required this.theme,
     this.obscureText = false,
+    this.obscuringWidget,
     this.hintCharacter,
     this.hintStyle,
     this.separatorBuilder,
@@ -28,6 +29,9 @@ class MaterialPinRow extends StatelessWidget {
 
   /// Whether to obscure the text.
   final bool obscureText;
+
+  /// Custom widget to show when obscuring text.
+  final Widget? obscuringWidget;
 
   /// Hint character to show in empty cells.
   final String? hintCharacter;
@@ -60,6 +64,7 @@ class MaterialPinRow extends StatelessWidget {
           data: cells[i],
           theme: theme,
           obscureText: obscureText,
+          obscuringWidget: obscuringWidget,
           hintCharacter: hintCharacter,
           hintStyle: hintStyle,
         ),

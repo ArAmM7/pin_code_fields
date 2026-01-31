@@ -66,6 +66,7 @@ class MaterialPinTheme {
     this.disabledColor,
     // Text
     this.textStyle,
+    this.textGradient,
     this.obscuringCharacter = '●',
     // Cursor
     this.cursorColor,
@@ -133,6 +134,11 @@ class MaterialPinTheme {
   /// Text style for PIN characters.
   final TextStyle? textStyle;
 
+  /// Gradient to apply to PIN text.
+  ///
+  /// When set, the text will be rendered with this gradient using a ShaderMask.
+  final Gradient? textGradient;
+
   /// Character used to obscure text.
   final String obscuringCharacter;
 
@@ -198,6 +204,7 @@ class MaterialPinTheme {
     Color? errorColor,
     Color? disabledColor,
     TextStyle? textStyle,
+    Gradient? textGradient,
     String? obscuringCharacter,
     Color? cursorColor,
     double? cursorWidth,
@@ -231,6 +238,7 @@ class MaterialPinTheme {
       errorColor: errorColor ?? this.errorColor,
       disabledColor: disabledColor ?? this.disabledColor,
       textStyle: textStyle ?? this.textStyle,
+      textGradient: textGradient ?? this.textGradient,
       obscuringCharacter: obscuringCharacter ?? this.obscuringCharacter,
       cursorColor: cursorColor ?? this.cursorColor,
       cursorWidth: cursorWidth ?? this.cursorWidth,
@@ -274,6 +282,7 @@ class MaterialPinTheme {
       errorColor: errorColor ?? colorScheme.error,
       disabledColor: disabledColor ?? colorScheme.onSurface.withValues(alpha: 0.38),
       textStyle: textStyle ?? textTheme.headlineSmall,
+      textGradient: textGradient,
       obscuringCharacter: obscuringCharacter,
       cursorColor: cursorColor ?? colorScheme.primary,
       cursorWidth: cursorWidth,
@@ -316,6 +325,7 @@ class MaterialPinThemeData {
     required this.errorColor,
     required this.disabledColor,
     required this.textStyle,
+    required this.textGradient,
     required this.obscuringCharacter,
     required this.cursorColor,
     required this.cursorWidth,
@@ -349,6 +359,7 @@ class MaterialPinThemeData {
   final Color errorColor;
   final Color disabledColor;
   final TextStyle? textStyle;
+  final Gradient? textGradient;
   final String obscuringCharacter;
   final Color cursorColor;
   final double cursorWidth;
