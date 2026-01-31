@@ -1,9 +1,8 @@
 name: pin_code_fields
 
 packages:
-  - packages/pin_field_core
-  - packages/pin_field_material
-  - packages/example
+  - packages/pin_code_fields
+  - packages/pin_code_fields/example
 
 command:
   bootstrap:
@@ -15,8 +14,8 @@ scripts:
     description: Run flutter analyze in all packages
 
   test:
-    run: melos exec -- flutter test
-    description: Run flutter test in all packages
+    run: melos exec --scope="pin_code_fields" -- flutter test
+    description: Run flutter test in pin_code_fields package
 
   format:
     run: melos exec -- dart format .
@@ -27,5 +26,5 @@ scripts:
     description: Check formatting in all packages
 
   publish:dry-run:
-    run: melos exec -- flutter pub publish --dry-run
-    description: Dry run publish for all packages
+    run: melos exec --scope="pin_code_fields" -- flutter pub publish --dry-run
+    description: Dry run publish for pin_code_fields package

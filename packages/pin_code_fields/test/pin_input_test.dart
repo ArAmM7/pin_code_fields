@@ -1,0 +1,170 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:pin_code_fields/pin_code_fields.dart';
+
+void main() {
+  group('PinInput', () {
+    testWidgets('renders builder with correct number of cells', (tester) async {
+      List<PinCellData>? capturedCells;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: PinInput(
+              length: 4,
+              builder: (context, cells) {
+                capturedCells = cells;
+                return Row(
+                  children: cells.map((c) => Text('${c.index}')).toList(),
+                );
+              },
+            ),
+          ),
+        ),
+      );
+
+      expect(capturedCells, isNotNull);
+      expect(capturedCells!.length, 4);
+      expect(capturedCells![0].index, 0);
+      expect(capturedCells![3].index, 3);
+    });
+
+    testWidgets('receives keyboard input', (tester) async {
+      String? changedValue;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: PinInput(
+              length: 4,
+              autoFocus: true,
+              builder: (context, cells) => Row(
+                children: cells.map((c) => Text(c.character ?? '-')).toList(),
+              ),
+              onChanged: (value) => changedValue = value,
+            ),
+          ),
+        ),
+      );
+
+      await tester.pump();
+      await tester.enterText(find.byType(EditableText), '1234');
+      await tester.pump();
+
+      expect(changedValue, '1234');
+    });
+
+    testWidgets('calls onCompleted when PIN is full', (tester) async {
+      String? completedValue;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: PinInput(
+              length: 4,
+              autoFocus: true,
+              builder: (context, cells) => Row(
+                children: cells.map((c) => Text(c.character ?? '-')).toList(),
+              ),
+              onCompleted: (value) => completedValue = value,
+            ),
+          ),
+        ),
+      );
+
+      await tester.pump();
+      await tester.enterText(find.byType(EditableText), '1234');
+      await tester.pump();
+
+      expect(completedValue, '1234');
+    });
+
+    testWidgets('limits input to specified length', (tester) async {
+      List<PinCellData>? capturedCells;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: PinInput(
+              length: 4,
+              autoFocus: true,
+              builder: (context, cells) {
+                capturedCells = cells;
+                return Row(
+                  children: cells.map((c) => Text(c.character ?? '-')).toList(),
+                );
+              },
+            ),
+          ),
+        ),
+      );
+
+      await tester.pump();
+      await tester.enterText(find.byType(EditableText), '123456');
+      await tester.pump();
+
+      // Should only have 4 filled cells
+      expect(capturedCells!.where((c) => c.isFilled).length, 4);
+    });
+
+    testWidgets('respects readOnly mode', (tester) async {
+      List<PinCellData>? capturedCells;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: PinInput(
+              length: 4,
+              readOnly: true,
+              builder: (context, cells) {
+                capturedCells = cells;
+                return Row(
+                  children: cells.map((c) => Text(c.character ?? '-')).toList(),
+                );
+              },
+            ),
+          ),
+        ),
+      );
+
+      // All cells should be disabled
+      expect(capturedCells!.every((c) => c.isDisabled), true);
+    });
+
+    testWidgets('uses external controller', (tester) async {
+      final controller = PinInputController(text: '12');
+      List<PinCellData>? capturedCells;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: PinInput(
+              length: 4,
+              pinController: controller,
+              builder: (context, cells) {
+                capturedCells = cells;
+                return Row(
+                  children: cells.map((c) => Text(c.character ?? '-')).toList(),
+                );
+              },
+            ),
+          ),
+        ),
+      );
+
+      await tester.pump();
+
+      // First two cells should be filled
+      expect(capturedCells![0].isFilled, true);
+      expect(capturedCells![1].isFilled, true);
+      expect(capturedCells![2].isFilled, false);
+      expect(capturedCells![3].isFilled, false);
+
+      // Update controller
+      controller.setText('1234');
+      await tester.pump();
+
+      expect(capturedCells!.every((c) => c.isFilled), true);
+    });
+  });
+}

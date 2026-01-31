@@ -305,7 +305,7 @@ This document lists all features from the existing `pin_code_fields` package (v9
 2. **Material Implementation**: `MaterialPinField` provides ready-to-use Material Design UI
 3. **Theme System**: `MaterialPinTheme` resolves colors from `ColorScheme` if not specified
 4. **Unified Controller**: `PinInputController` consolidates `TextEditingController`, `FocusNode`, and `errorAnimationController` into a single controller
-5. **Separate Packages**: Import `pin_field_core` for core types and `pin_field_material` for Material widgets
+5. **Single Import**: One package, one import - `import 'package:pin_code_fields/pin_code_fields.dart';`
 
 ### PinInputController (New)
 
@@ -356,10 +356,9 @@ final controller = PinInputController(
 The new headless architecture provides several advantages:
 
 ### For Quick Implementation
-Use `MaterialPinField` from `pin_field_material` package:
+Use `MaterialPinField` for ready-to-use Material Design:
 ```dart
-import 'package:pin_field_core/pin_field_core.dart';
-import 'package:pin_field_material/pin_field_material.dart';
+import 'package:pin_code_fields/pin_code_fields.dart';
 
 final controller = PinInputController();
 
@@ -375,9 +374,9 @@ MaterialPinField(
 ```
 
 ### For Custom UI
-Use `PinInput` from `pin_field_core` package with complete control:
+Use `PinInput` for complete control over rendering:
 ```dart
-import 'package:pin_field_core/pin_field_core.dart';
+import 'package:pin_code_fields/pin_code_fields.dart';
 
 PinInput(
   length: 4,
@@ -395,9 +394,10 @@ PinInput(
 ```
 
 ### Key Benefits
+- **Single Import**: One package, one import for everything
 - **Separation of Concerns**: Input logic is completely separate from visuals
-- **Full Customization**: Build any UI you want with the headless core
-- **Material Ready**: Use the Material package for quick, beautiful implementations
+- **Full Customization**: Build any UI you want with the headless `PinInput`
+- **Material Ready**: Use `MaterialPinField` for quick, beautiful implementations
 - **Unified Controller**: Single `PinInputController` manages text, focus, and error state
 - **Future-Proof**: Easy to add new design implementations (e.g., Cupertino, custom themes)
 - **Testable**: Core logic can be tested independently of UI
