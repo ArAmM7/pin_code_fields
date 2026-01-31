@@ -39,6 +39,8 @@ class MaterialPinField extends StatefulWidget {
     this.inputFormatters,
     this.textCapitalization = TextCapitalization.none,
     this.autofillHints,
+    this.enableAutofill = false,
+    this.autofillContextAction = AutofillContextAction.commit,
     // Behavior
     this.autoFocus = false,
     this.readOnly = false,
@@ -64,6 +66,7 @@ class MaterialPinField extends StatefulWidget {
     this.hintStyle,
     // Layout
     this.separatorBuilder,
+    this.mainAxisAlignment = MainAxisAlignment.center,
     // Keyboard
     this.keyboardAppearance,
     this.scrollPadding = const EdgeInsets.all(20),
@@ -95,6 +98,18 @@ class MaterialPinField extends StatefulWidget {
 
   /// Autofill hints for the text field.
   final Iterable<String>? autofillHints;
+
+  /// Whether to enable autofill functionality.
+  ///
+  /// When enabled, the field will be wrapped in an [AutofillGroup] to support
+  /// SMS OTP autofill and password managers.
+  final bool enableAutofill;
+
+  /// The action to take when the autofill context is disposed.
+  ///
+  /// - [AutofillContextAction.commit]: Save the autofilled data (default)
+  /// - [AutofillContextAction.cancel]: Discard the autofilled data
+  final AutofillContextAction autofillContextAction;
 
   /// Whether to auto-focus on mount.
   final bool autoFocus;
@@ -150,6 +165,11 @@ class MaterialPinField extends StatefulWidget {
   /// Optional builder for separators between cells.
   final Widget Function(BuildContext context, int index)? separatorBuilder;
 
+  /// How the cells should be aligned horizontally.
+  ///
+  /// Defaults to [MainAxisAlignment.center].
+  final MainAxisAlignment mainAxisAlignment;
+
   /// The brightness of the keyboard.
   final Brightness? keyboardAppearance;
 
@@ -181,6 +201,8 @@ class _MaterialPinFieldState extends State<MaterialPinField> {
         inputFormatters: widget.inputFormatters,
         textCapitalization: widget.textCapitalization,
         autofillHints: widget.autofillHints,
+        enableAutofill: widget.enableAutofill,
+        autofillContextAction: widget.autofillContextAction,
         autoFocus: widget.autoFocus,
         readOnly: widget.readOnly,
         autoDismissKeyboard: widget.autoDismissKeyboard,
@@ -207,6 +229,7 @@ class _MaterialPinFieldState extends State<MaterialPinField> {
             hintCharacter: widget.hintCharacter,
             hintStyle: widget.hintStyle,
             separatorBuilder: widget.separatorBuilder,
+            mainAxisAlignment: widget.mainAxisAlignment,
           );
         },
       ),

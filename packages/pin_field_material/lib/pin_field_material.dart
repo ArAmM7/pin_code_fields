@@ -61,3 +61,4 @@ export 'src/animations/error_shake.dart';
 export 'src/shapes/outlined_decoration.dart';
 export 'src/shapes/filled_decoration.dart';
 export 'src/shapes/underlined_decoration.dart';
+export 'src/shapes/circle_decoration.dart';

@@ -57,7 +57,7 @@ class HomePage extends StatelessWidget {
           _buildSection(
             context,
             'Shape Variants',
-            'See outlined, filled, and underlined shapes',
+            'See outlined, filled, underlined, and circle shapes',
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const ShapeVariantsDemo()),
@@ -267,6 +267,12 @@ class ShapeVariantsDemo extends StatelessWidget {
             context,
             'Underlined',
             MaterialPinShape.underlined,
+          ),
+          const SizedBox(height: 32),
+          _buildShapeSection(
+            context,
+            'Circle',
+            MaterialPinShape.circle,
           ),
         ],
       ),

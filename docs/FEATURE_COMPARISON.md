@@ -49,9 +49,9 @@ This document lists all features from the existing `pin_code_fields` package (v9
 
 | Parameter | Type | Default | Description | New Package Status |
 |-----------|------|---------|-------------|-------------------|
-| `enablePinAutofill` | `bool` | `true` | Enable SMS autofill | ❌ **Missing** |
-| `onAutoFillDisposeAction` | `AutofillContextAction` | `commit` | Autofill cleanup action | ❌ **Missing** |
-| `autofillHints` | `Iterable<String>?` | `null` | Autofill hints | ✅ Implemented (param exists, needs integration) |
+| `enablePinAutofill` | `bool` | `true` | Enable SMS autofill | ✅ Implemented (as `enableAutofill`) |
+| `onAutoFillDisposeAction` | `AutofillContextAction` | `commit` | Autofill cleanup action | ✅ Implemented (as `autofillContextAction`) |
+| `autofillHints` | `Iterable<String>?` | `null` | Autofill hints | ✅ Implemented |
 
 ---
 
@@ -128,7 +128,7 @@ This document lists all features from the existing `pin_code_fields` package (v9
 |-------|-------------|-------------------|
 | `PinCodeFieldShape.box` | Bordered box | ✅ Implemented (as `outlined`) |
 | `PinCodeFieldShape.underline` | Bottom border only | ✅ Implemented |
-| `PinCodeFieldShape.circle` | Circular shape | ❌ **Missing** |
+| `PinCodeFieldShape.circle` | Circular shape | ✅ Implemented (as `circle`) |
 
 ### Border Colors
 
@@ -209,7 +209,7 @@ This document lists all features from the existing `pin_code_fields` package (v9
 
 | Parameter | Type | Default | Description | New Package Status |
 |-----------|------|---------|-------------|-------------------|
-| `mainAxisAlignment` | `MainAxisAlignment` | `spaceBetween` | Row alignment | ⚠️ Partial (centered by default) |
+| `mainAxisAlignment` | `MainAxisAlignment` | `center` | Row alignment | ✅ Implemented |
 | `separatorBuilder` | `IndexedWidgetBuilder?` | `null` | Custom separator between cells | ✅ Implemented |
 
 ---
@@ -256,26 +256,24 @@ This document lists all features from the existing `pin_code_fields` package (v9
 - Core input handling
 - Text obscuring (basic)
 - Keyboard configuration
+- Autofill support (SMS OTP, password managers)
 - Haptic feedback
 - All callbacks
 - Cursor styling & animation
-- Most theme properties
-- Entry animations
+- All cell shapes (outlined, filled, underlined, circle)
+- All theme properties
+- Entry animations (scale, fade, slide, none)
 - Error shake animation
 - Context menu (paste)
 - Form integration
 - Separator builder
 
 ### Partially Implemented ⚠️
-- `mainAxisAlignment` - defaults to center
-- `ErrorAnimationType.clear` - auto-clears on input
+- `ErrorAnimationType.clear` - auto-clears on input (better UX in most cases)
 
 ### Missing Features ❌
 1. **`obscuringWidget`** - Custom widget for obscuring (uses character only)
 2. **`textGradient`** - Gradient text effect
-3. **`PinCodeFieldShape.circle`** - Circular cell shape
-4. **`enablePinAutofill`** - SMS autofill integration
-5. **`onAutoFillDisposeAction`** - Autofill cleanup
 
 ---
 
@@ -295,6 +293,8 @@ This document lists all features from the existing `pin_code_fields` package (v9
 | `pinTheme.inactiveColor` | `theme.borderColor` |
 | `pinTheme.fieldWidth/Height` | `theme.cellSize` |
 | `pinTheme.fieldOuterPadding` | `theme.spacing` |
+| `enablePinAutofill` | `enableAutofill` |
+| `onAutoFillDisposeAction` | `autofillContextAction` |
 
 ### Structural Changes
 
@@ -302,3 +302,47 @@ This document lists all features from the existing `pin_code_fields` package (v9
 2. **Material Implementation**: `MaterialPinField` provides ready-to-use Material Design UI
 3. **Theme System**: `MaterialPinTheme` resolves colors from `ColorScheme` if not specified
 4. **Error Handling**: Use `Stream<void>` instead of `StreamController<ErrorAnimationType>`
+
+---
+
+## New Architecture Benefits
+
+The new headless architecture provides several advantages:
+
+### For Quick Implementation
+Use `MaterialPinField` from `pin_field_material` package:
+```dart
+MaterialPinField(
+  length: 6,
+  onCompleted: (pin) => print('PIN: $pin'),
+  theme: MaterialPinTheme(
+    shape: MaterialPinShape.circle,
+    entryAnimation: MaterialPinAnimation.scale,
+  ),
+)
+```
+
+### For Custom UI
+Use `PinInput` from `pin_field_core` package with complete control:
+```dart
+PinInput(
+  length: 4,
+  builder: (context, cells) {
+    return Row(
+      children: cells.map((cell) => MyCustomCell(
+        character: cell.character,
+        isFocused: cell.isFocused,
+        isFilled: cell.isFilled,
+        isError: cell.isError,
+      )).toList(),
+    );
+  },
+)
+```
+
+### Key Benefits
+- **Separation of Concerns**: Input logic is completely separate from visuals
+- **Full Customization**: Build any UI you want with the headless core
+- **Material Ready**: Use the Material package for quick, beautiful implementations
+- **Future-Proof**: Easy to add new design implementations (e.g., Cupertino, custom themes)
+- **Testable**: Core logic can be tested independently of UI

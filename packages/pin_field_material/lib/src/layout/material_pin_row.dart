@@ -17,6 +17,7 @@ class MaterialPinRow extends StatelessWidget {
     this.hintCharacter,
     this.hintStyle,
     this.separatorBuilder,
+    this.mainAxisAlignment = MainAxisAlignment.center,
   });
 
   /// List of cell data for each PIN position.
@@ -37,11 +38,14 @@ class MaterialPinRow extends StatelessWidget {
   /// Optional builder for separators between cells.
   final Widget Function(BuildContext context, int index)? separatorBuilder;
 
+  /// How the cells should be aligned horizontally.
+  final MainAxisAlignment mainAxisAlignment;
+
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: mainAxisAlignment,
       children: _buildChildren(context),
     );
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pin_field_core/pin_field_core.dart';
 
+import '../shapes/circle_decoration.dart';
 import '../shapes/filled_decoration.dart';
 import '../shapes/outlined_decoration.dart';
 import '../shapes/underlined_decoration.dart';
@@ -108,6 +109,13 @@ class MaterialPinCell extends StatelessWidget {
       case MaterialPinShape.underlined:
         return buildUnderlinedDecoration(
           fillColor: Colors.transparent,
+          borderColor: borderColor,
+          borderWidth: borderWidth,
+          boxShadows: boxShadows,
+        );
+      case MaterialPinShape.circle:
+        return buildCircleDecoration(
+          fillColor: fillColor,
           borderColor: borderColor,
           borderWidth: borderWidth,
           boxShadows: boxShadows,

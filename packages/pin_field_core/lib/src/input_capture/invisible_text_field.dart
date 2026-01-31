@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-/// A completely invisible EditableText that captures keyboard input.
+/// A completely invisible TextField that captures keyboard input.
 ///
 /// This widget is positioned behind the visual PIN cells and handles
-/// all keyboard input, text formatting, and length limiting.
+/// all keyboard input, text formatting, length limiting, and autofill.
 class InvisibleTextField extends StatelessWidget {
   const InvisibleTextField({
     super.key,
@@ -80,10 +80,15 @@ class InvisibleTextField extends StatelessWidget {
   final EdgeInsets scrollPadding;
 
   /// Autofill hints for the text field.
+  ///
+  /// Common values for PIN/OTP fields:
+  /// - [AutofillHints.oneTimeCode] - For OTP/verification codes
+  /// - [AutofillHints.password] - For PIN/password entry
   final Iterable<String>? autofillHints;
 
   @override
   Widget build(BuildContext context) {
+    // Use EditableText for core functionality with autofill support
     return EditableText(
       key: editableTextKey,
       controller: controller,
@@ -120,6 +125,8 @@ class InvisibleTextField extends StatelessWidget {
       textAlign: TextAlign.center,
       maxLines: 1,
       clipBehavior: Clip.none,
+      // Autofill support
+      autofillHints: autofillHints,
     );
   }
 

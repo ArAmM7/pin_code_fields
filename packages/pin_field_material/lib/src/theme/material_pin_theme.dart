@@ -2,14 +2,17 @@ import 'package:flutter/material.dart';
 
 /// Shape variants for Material PIN cells.
 enum MaterialPinShape {
-  /// Cell with border on all sides.
+  /// Cell with border on all sides (rectangular).
   outlined,
 
-  /// Cell with solid fill color.
+  /// Cell with solid fill color (no border).
   filled,
 
   /// Cell with only a bottom border.
   underlined,
+
+  /// Circular cell.
+  circle,
 }
 
 /// Animation types for PIN cell entry.

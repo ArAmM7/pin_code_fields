@@ -75,6 +75,9 @@ class PinInput extends StatefulWidget {
     // Keyboard
     this.keyboardAppearance,
     this.scrollPadding = const EdgeInsets.all(20),
+    // Autofill
+    this.enableAutofill = false,
+    this.autofillContextAction = AutofillContextAction.commit,
   })  : assert(length > 0, 'Length must be greater than 0'),
         assert(
           obscuringCharacter.length > 0,
@@ -177,6 +180,20 @@ class PinInput extends StatefulWidget {
 
   /// Padding when scrolling the field into view.
   final EdgeInsets scrollPadding;
+
+  /// Whether to enable autofill (e.g., SMS OTP autofill).
+  ///
+  /// When enabled, the system may automatically fill in OTP codes
+  /// received via SMS or suggest saved PINs/passwords.
+  final bool enableAutofill;
+
+  /// Action to perform when the autofill context is disposed.
+  ///
+  /// - [AutofillContextAction.commit]: Tell the system to save the data
+  ///   (useful for password managers to save PINs/passwords)
+  /// - [AutofillContextAction.cancel]: Tell the system to discard the data
+  ///   (appropriate for one-time codes like OTP)
+  final AutofillContextAction autofillContextAction;
 
   @override
   State<PinInput> createState() => _PinInputState();
@@ -511,7 +528,7 @@ class _PinInputState extends State<PinInput>
     final selectionControls = widget.selectionControls ??
         (selectionEnabled ? getDefaultSelectionControls(context) : null);
 
-    return GestureDetector(
+    Widget content = GestureDetector(
       onTap: () {
         if (!_effectiveFocusNode.hasFocus && !widget.readOnly) {
           _requestFocusSafely();
@@ -552,7 +569,7 @@ class _PinInputState extends State<PinInput>
                   onSelectionChanged: _handleSelectionChanged,
                   keyboardAppearance: widget.keyboardAppearance,
                   scrollPadding: widget.scrollPadding,
-                  autofillHints: widget.autofillHints,
+                  autofillHints: widget.enableAutofill ? widget.autofillHints : null,
                 ),
               ),
             ],
@@ -560,5 +577,15 @@ class _PinInputState extends State<PinInput>
         ),
       ),
     );
+
+    // Wrap with AutofillGroup if autofill is enabled
+    if (widget.enableAutofill) {
+      content = AutofillGroup(
+        onDisposeAction: widget.autofillContextAction,
+        child: content,
+      );
+    }
+
+    return content;
   }
 }
