@@ -24,7 +24,7 @@ class _ErrorStateDemoState extends State<ErrorStateDemo> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Error Handling')),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
           children: [

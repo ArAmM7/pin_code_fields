@@ -23,7 +23,7 @@ class _EntryAnimationsDemoState extends State<EntryAnimationsDemo> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Entry Animations')),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
           children: [

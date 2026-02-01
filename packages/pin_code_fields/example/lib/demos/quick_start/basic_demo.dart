@@ -16,10 +16,10 @@ class _BasicDemoState extends State<BasicDemo> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Basic Usage')),
-      body: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Column(
           children: [
             const Text(
               'Enter PIN',
@@ -59,6 +59,7 @@ MaterialPinField(
 )''',
             ),
           ],
+          ),
         ),
       ),
     );

@@ -24,7 +24,7 @@ class _ControllerDemoState extends State<ControllerDemo> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Controller Usage')),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
           children: [

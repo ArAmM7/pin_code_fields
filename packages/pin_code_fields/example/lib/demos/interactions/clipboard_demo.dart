@@ -44,12 +44,11 @@ class _ClipboardDemoState extends State<ClipboardDemo> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Clipboard Detection')),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
               const Text(
                 'Clipboard Detection',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -170,7 +169,7 @@ class _ClipboardDemoState extends State<ClipboardDemo> {
                 ),
               ),
 
-              const Spacer(),
+              const SizedBox(height: 32),
 
               // Clear button
               FilledButton.tonal(
@@ -183,7 +182,6 @@ class _ClipboardDemoState extends State<ClipboardDemo> {
             ],
           ),
         ),
-      ),
     );
   }
 }
