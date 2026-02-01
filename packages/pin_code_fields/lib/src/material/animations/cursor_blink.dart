@@ -105,11 +105,9 @@ class _CursorBlinkState extends State<CursorBlink>
           color: widget.color,
         );
 
-    return Center(
-      child: Opacity(
-        opacity: opacity,
-        child: cursorWidget,
-      ),
+    return Opacity(
+      opacity: opacity,
+      child: cursorWidget,
     );
   }
 }

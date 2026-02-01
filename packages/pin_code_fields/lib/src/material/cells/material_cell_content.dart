@@ -155,28 +155,45 @@ class MaterialCellContent extends StatelessWidget {
   }
 
   Widget _buildCursor(BuildContext context) {
+    Widget cursor;
+
     // Use custom cursor widget if provided
     if (theme.cursorWidget != null) {
-      return CursorBlink(
+      cursor = CursorBlink(
         key: const ValueKey('cursor'),
         animate: theme.animateCursor,
         duration: theme.cursorBlinkDuration,
         child: theme.cursorWidget,
       );
+    } else {
+      // Default line cursor
+      final cursorHeight =
+          theme.cursorHeight ?? (theme.textStyle?.fontSize ?? 20) + 8;
+
+      cursor = CursorBlink(
+        key: const ValueKey('cursor'),
+        color: theme.cursorColor,
+        width: theme.cursorWidth,
+        height: cursorHeight,
+        animate: theme.animateCursor,
+        duration: theme.cursorBlinkDuration,
+      );
     }
 
-    // Default line cursor
-    final cursorHeight = theme.cursorHeight ??
-        (theme.textStyle?.fontSize ?? 20) + 8;
+    // Apply alignment (uses Stack's alignment for center, or explicit Align for others)
+    if (theme.cursorAlignment != Alignment.center) {
+      // Use SizedBox with cell size to fill the parent, allowing Align to position correctly
+      return SizedBox(
+        width: theme.cellSize.width,
+        height: theme.cellSize.height,
+        child: Align(
+          alignment: theme.cursorAlignment,
+          child: cursor,
+        ),
+      );
+    }
 
-    return CursorBlink(
-      key: const ValueKey('cursor'),
-      color: theme.cursorColor,
-      width: theme.cursorWidth,
-      height: cursorHeight,
-      animate: theme.animateCursor,
-      duration: theme.cursorBlinkDuration,
-    );
+    return cursor;
   }
 
   Widget _buildHint(BuildContext context, String hintChar) {

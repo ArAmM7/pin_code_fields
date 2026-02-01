@@ -97,6 +97,7 @@ class MaterialPinTheme {
     this.animateCursor = true,
     this.cursorBlinkDuration = const Duration(milliseconds: 500),
     this.cursorWidget,
+    this.cursorAlignment,
     // Shadows
     this.elevation = 0,
     this.focusedElevation = 0,
@@ -273,6 +274,17 @@ class MaterialPinTheme {
   /// The widget will be wrapped with the blink animation if [animateCursor] is true.
   final Widget? cursorWidget;
 
+  /// Alignment for the cursor widget within the cell.
+  ///
+  /// This is useful for positioning custom cursor widgets like underscores
+  /// at the bottom of the cell. Defaults to [Alignment.center].
+  ///
+  /// Example for underscore cursor at bottom:
+  /// ```dart
+  /// cursorAlignment: Alignment.bottomCenter,
+  /// ```
+  final Alignment? cursorAlignment;
+
   /// Elevation for cells.
   final double elevation;
 
@@ -360,6 +372,7 @@ class MaterialPinTheme {
     bool? animateCursor,
     Duration? cursorBlinkDuration,
     Widget? cursorWidget,
+    Alignment? cursorAlignment,
     double? elevation,
     double? focusedElevation,
     List<BoxShadow>? boxShadows,
@@ -411,6 +424,7 @@ class MaterialPinTheme {
       animateCursor: animateCursor ?? this.animateCursor,
       cursorBlinkDuration: cursorBlinkDuration ?? this.cursorBlinkDuration,
       cursorWidget: cursorWidget ?? this.cursorWidget,
+      cursorAlignment: cursorAlignment ?? this.cursorAlignment,
       elevation: elevation ?? this.elevation,
       focusedElevation: focusedElevation ?? this.focusedElevation,
       boxShadows: boxShadows ?? this.boxShadows,
@@ -487,6 +501,7 @@ class MaterialPinTheme {
       animateCursor: animateCursor,
       cursorBlinkDuration: cursorBlinkDuration,
       cursorWidget: cursorWidget,
+      cursorAlignment: cursorAlignment ?? Alignment.center,
       elevation: elevation,
       focusedElevation: focusedElevation,
       boxShadows: boxShadows,
@@ -547,6 +562,7 @@ class MaterialPinThemeData {
     required this.animateCursor,
     required this.cursorBlinkDuration,
     required this.cursorWidget,
+    required this.cursorAlignment,
     required this.elevation,
     required this.focusedElevation,
     required this.boxShadows,
@@ -598,6 +614,7 @@ class MaterialPinThemeData {
   final bool animateCursor;
   final Duration cursorBlinkDuration;
   final Widget? cursorWidget;
+  final Alignment cursorAlignment;
   final double elevation;
   final double focusedElevation;
   final List<BoxShadow>? boxShadows;
