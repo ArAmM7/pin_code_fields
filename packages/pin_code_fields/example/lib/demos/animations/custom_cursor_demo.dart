@@ -52,12 +52,16 @@ class CustomCursorDemo extends StatelessWidget {
               theme: MaterialPinTheme(
                 shape: MaterialPinShape.outlined,
                 cellSize: const Size(56, 64),
-                cursorWidget: Container(
-                  width: 24,
-                  height: 3,
-                  decoration: BoxDecoration(
-                    color: colorScheme.primary,
-                    borderRadius: BorderRadius.circular(2),
+                cursorAlignment: Alignment.bottomCenter,
+                cursorWidget: Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Container(
+                    width: 24,
+                    height: 3,
+                    decoration: BoxDecoration(
+                      color: colorScheme.primary,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
                   ),
                 ),
               ),
