@@ -57,6 +57,13 @@ class PinInputController extends ChangeNotifier {
     if (textController != null && text != null && textController.text.isEmpty) {
       textController.text = text;
     }
+    // Listen to focus and text changes to notify listeners
+    _focusNode.addListener(_onStateChanged);
+    _textController.addListener(_onStateChanged);
+  }
+
+  void _onStateChanged() {
+    notifyListeners();
   }
 
   final TextEditingController _textController;
@@ -183,6 +190,8 @@ class PinInputController extends ChangeNotifier {
 
   @override
   void dispose() {
+    _focusNode.removeListener(_onStateChanged);
+    _textController.removeListener(_onStateChanged);
     if (_ownsTextController) {
       _textController.dispose();
     }
