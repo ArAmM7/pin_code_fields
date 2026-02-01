@@ -16,6 +16,7 @@ import 'demos/shapes_themes/color_customization_demo.dart';
 import 'demos/shapes_themes/shadows_demo.dart';
 import 'demos/animations/entry_animations_demo.dart';
 import 'demos/animations/custom_cursor_demo.dart';
+import 'demos/animations/creative_cell_animations_demo.dart';
 import 'demos/state_theming/all_states_demo.dart';
 import 'demos/state_theming/error_state_demo.dart';
 import 'demos/customization/headless_builder_demo.dart';
@@ -244,6 +245,10 @@ class _FeaturesTab extends StatelessWidget {
         _FeatureSection(
           title: 'Animations',
           items: [
+            _FeatureItem(
+              title: 'Creative Cell Animations',
+              page: const CreativeCellAnimationsDemo(),
+            ),
             _FeatureItem(
               title: 'Entry Animations',
               page: const EntryAnimationsDemo(),
