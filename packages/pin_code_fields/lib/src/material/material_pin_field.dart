@@ -57,21 +57,34 @@ class MaterialPinField extends StatefulWidget {
     this.hapticFeedbackType = HapticFeedbackType.light,
     // Gestures
     this.enablePaste = true,
+    // Clipboard
+    this.onClipboardFound,
+    this.clipboardValidator,
     // Callbacks
     this.onChanged,
     this.onCompleted,
     this.onSubmitted,
     this.onEditingComplete,
     this.onTap,
+    this.onLongPress,
+    this.onTapOutside,
     // Hint (overrides theme)
     this.hintCharacter,
+    this.hintWidget,
     this.hintStyle,
     // Layout
     this.separatorBuilder,
     this.mainAxisAlignment = MainAxisAlignment.center,
+    this.crossAxisAlignment = CrossAxisAlignment.center,
+    // Cursor
+    this.mouseCursor,
     // Keyboard
     this.keyboardAppearance,
     this.scrollPadding = const EdgeInsets.all(20),
+    // Error display
+    this.errorText,
+    this.errorBuilder,
+    this.errorTextStyle,
   }) : assert(length > 0, 'Length must be greater than 0');
 
   /// Number of PIN cells.
@@ -165,6 +178,23 @@ class MaterialPinField extends StatefulWidget {
   /// Whether to enable paste functionality.
   final bool enablePaste;
 
+  /// Called when the clipboard contains valid PIN-like content on focus.
+  ///
+  /// This callback is triggered when the field gains focus and the clipboard
+  /// contains content that could be pasted. Use this to show a "Paste 123456?"
+  /// prompt or auto-paste confirmation.
+  ///
+  /// See [PinInput.onClipboardFound] for more details.
+  final ValueChanged<String>? onClipboardFound;
+
+  /// Custom validator for clipboard content.
+  ///
+  /// If provided, this function is used instead of the default validation
+  /// to determine if clipboard content should trigger [onClipboardFound].
+  ///
+  /// See [PinInput.clipboardValidator] for more details.
+  final bool Function(String text, int length)? clipboardValidator;
+
   /// Called when the text changes.
   final ValueChanged<String>? onChanged;
 
@@ -180,10 +210,25 @@ class MaterialPinField extends StatefulWidget {
   /// Called when the widget is tapped.
   final VoidCallback? onTap;
 
+  /// Called when the widget is long pressed.
+  final VoidCallback? onLongPress;
+
+  /// Called when user taps outside the field.
+  ///
+  /// This can be used to dismiss the keyboard or trigger validation.
+  /// See [PinInput.onTapOutside] for more details.
+  final void Function(PointerDownEvent event)? onTapOutside;
+
   /// Hint character to show in empty cells.
   ///
   /// Overrides [MaterialPinTheme.hintCharacter] if provided.
+  /// If [hintWidget] is provided, this is ignored.
   final String? hintCharacter;
+
+  /// Custom widget to show in empty cells.
+  ///
+  /// When provided, this widget is displayed instead of [hintCharacter].
+  final Widget? hintWidget;
 
   /// Style for hint character.
   ///
@@ -198,11 +243,57 @@ class MaterialPinField extends StatefulWidget {
   /// Defaults to [MainAxisAlignment.center].
   final MainAxisAlignment mainAxisAlignment;
 
+  /// How the cells should be aligned vertically.
+  ///
+  /// Defaults to [CrossAxisAlignment.center].
+  final CrossAxisAlignment crossAxisAlignment;
+
+  /// The mouse cursor to show when hovering over the widget.
+  ///
+  /// Defaults to [SystemMouseCursors.text] when enabled.
+  final MouseCursor? mouseCursor;
+
   /// The brightness of the keyboard.
   final Brightness? keyboardAppearance;
 
   /// Padding when scrolling the field into view.
   final EdgeInsets scrollPadding;
+
+  /// Error text to display below the PIN field.
+  ///
+  /// When provided along with [errorBuilder], the error widget will be displayed
+  /// below the PIN cells. If only [errorText] is provided without [errorBuilder],
+  /// a default error text widget is displayed.
+  ///
+  /// The error is only shown when [PinInputController.hasError] is true.
+  final String? errorText;
+
+  /// Custom builder for error display.
+  ///
+  /// When provided, this builder is used to create the error widget displayed
+  /// below the PIN cells. The builder receives the [errorText] (which may be null).
+  ///
+  /// Example:
+  /// ```dart
+  /// MaterialPinField(
+  ///   errorText: 'Invalid code',
+  ///   errorBuilder: (errorText) => Row(
+  ///     mainAxisSize: MainAxisSize.min,
+  ///     children: [
+  ///       Icon(Icons.error, color: Colors.red, size: 16),
+  ///       SizedBox(width: 4),
+  ///       Text(errorText ?? 'Error', style: TextStyle(color: Colors.red)),
+  ///     ],
+  ///   ),
+  /// )
+  /// ```
+  final Widget Function(String? errorText)? errorBuilder;
+
+  /// Text style for the default error text display.
+  ///
+  /// Only used when [errorText] is provided without [errorBuilder].
+  /// If not specified, uses the theme's error color with body text style.
+  final TextStyle? errorTextStyle;
 
   @override
   State<MaterialPinField> createState() => _MaterialPinFieldState();
@@ -269,54 +360,107 @@ class _MaterialPinFieldState extends State<MaterialPinField>
   @override
   Widget build(BuildContext context) {
     final resolvedTheme = widget.theme.resolve(context);
+    final hasError = effectiveController.hasError;
+    final showError = hasError &&
+        (widget.errorText != null || widget.errorBuilder != null);
+
+    Widget pinInput = PinInput(
+      length: widget.length,
+      pinController: effectiveController,
+      // Note: initialValue is handled by the mixin during controller init
+      keyboardType: widget.keyboardType,
+      textInputAction: widget.textInputAction,
+      inputFormatters: widget.inputFormatters,
+      textCapitalization: widget.textCapitalization,
+      autofillHints: widget.autofillHints,
+      enableAutofill: widget.enableAutofill,
+      autofillContextAction: widget.autofillContextAction,
+      enabled: widget.enabled,
+      autoFocus: widget.autoFocus,
+      readOnly: widget.readOnly,
+      autoDismissKeyboard: widget.autoDismissKeyboard,
+      clearErrorOnInput: widget.clearErrorOnInput,
+      obscureText: widget.obscureText,
+      obscuringCharacter: resolvedTheme.obscuringCharacter,
+      blinkWhenObscuring: widget.blinkWhenObscuring,
+      blinkDuration: widget.blinkDuration,
+      enableHapticFeedback: widget.enableHapticFeedback,
+      hapticFeedbackType: widget.hapticFeedbackType,
+      enablePaste: widget.enablePaste,
+      onClipboardFound: widget.onClipboardFound,
+      clipboardValidator: widget.clipboardValidator,
+      onChanged: widget.onChanged,
+      onCompleted: widget.onCompleted,
+      onSubmitted: widget.onSubmitted,
+      onEditingComplete: widget.onEditingComplete,
+      onTap: widget.onTap,
+      onLongPress: widget.onLongPress,
+      onTapOutside: widget.onTapOutside,
+      mouseCursor: widget.mouseCursor,
+      keyboardAppearance: widget.keyboardAppearance,
+      scrollPadding: widget.scrollPadding,
+      builder: (context, cells) {
+        return MaterialPinRow(
+          cells: cells,
+          theme: resolvedTheme,
+          obscureText: widget.obscureText,
+          obscuringWidget: widget.obscuringWidget,
+          hintCharacter: widget.hintCharacter,
+          hintWidget: widget.hintWidget,
+          hintStyle: widget.hintStyle,
+          separatorBuilder: widget.separatorBuilder,
+          mainAxisAlignment: widget.mainAxisAlignment,
+          crossAxisAlignment: widget.crossAxisAlignment,
+        );
+      },
+    );
+
+    // Wrap with error display if needed
+    if (widget.errorBuilder != null || widget.errorText != null) {
+      pinInput = Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          pinInput,
+          // Error widget with animated visibility
+          AnimatedSize(
+            duration: resolvedTheme.animationDuration,
+            curve: resolvedTheme.animationCurve,
+            child: showError
+                ? Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: _buildErrorWidget(context, resolvedTheme),
+                  )
+                : const SizedBox.shrink(),
+          ),
+        ],
+      );
+    }
 
     return ErrorShake(
       key: _shakeKey,
       duration: resolvedTheme.errorAnimationDuration,
       enabled: resolvedTheme.enableErrorShake,
-      child: PinInput(
-        length: widget.length,
-        pinController: effectiveController,
-        // Note: initialValue is handled by the mixin during controller init
-        keyboardType: widget.keyboardType,
-        textInputAction: widget.textInputAction,
-        inputFormatters: widget.inputFormatters,
-        textCapitalization: widget.textCapitalization,
-        autofillHints: widget.autofillHints,
-        enableAutofill: widget.enableAutofill,
-        autofillContextAction: widget.autofillContextAction,
-        enabled: widget.enabled,
-        autoFocus: widget.autoFocus,
-        readOnly: widget.readOnly,
-        autoDismissKeyboard: widget.autoDismissKeyboard,
-        clearErrorOnInput: widget.clearErrorOnInput,
-        obscureText: widget.obscureText,
-        obscuringCharacter: resolvedTheme.obscuringCharacter,
-        blinkWhenObscuring: widget.blinkWhenObscuring,
-        blinkDuration: widget.blinkDuration,
-        enableHapticFeedback: widget.enableHapticFeedback,
-        hapticFeedbackType: widget.hapticFeedbackType,
-        enablePaste: widget.enablePaste,
-        onChanged: widget.onChanged,
-        onCompleted: widget.onCompleted,
-        onSubmitted: widget.onSubmitted,
-        onEditingComplete: widget.onEditingComplete,
-        onTap: widget.onTap,
-        keyboardAppearance: widget.keyboardAppearance,
-        scrollPadding: widget.scrollPadding,
-        builder: (context, cells) {
-          return MaterialPinRow(
-            cells: cells,
-            theme: resolvedTheme,
-            obscureText: widget.obscureText,
-            obscuringWidget: widget.obscuringWidget,
-            hintCharacter: widget.hintCharacter,
-            hintStyle: widget.hintStyle,
-            separatorBuilder: widget.separatorBuilder,
-            mainAxisAlignment: widget.mainAxisAlignment,
-          );
-        },
-      ),
+      child: pinInput,
+    );
+  }
+
+  Widget _buildErrorWidget(BuildContext context, MaterialPinThemeData theme) {
+    // Use custom builder if provided
+    if (widget.errorBuilder != null) {
+      return widget.errorBuilder!(widget.errorText);
+    }
+
+    // Default error text display
+    final errorStyle = widget.errorTextStyle ??
+        Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: theme.errorColor,
+            ) ??
+        TextStyle(color: theme.errorColor, fontSize: 12);
+
+    return Text(
+      widget.errorText ?? '',
+      style: errorStyle,
     );
   }
 }

@@ -68,12 +68,19 @@ class PinInput extends StatefulWidget {
     this.enablePaste = true,
     this.selectionControls,
     this.contextMenuBuilder = defaultPinContextMenuBuilder,
+    // Clipboard
+    this.onClipboardFound,
+    this.clipboardValidator,
     // Callbacks
     this.onChanged,
     this.onCompleted,
     this.onSubmitted,
     this.onEditingComplete,
     this.onTap,
+    this.onLongPress,
+    this.onTapOutside,
+    // Cursor
+    this.mouseCursor,
     // Keyboard
     this.keyboardAppearance,
     this.scrollPadding = const EdgeInsets.all(20),
@@ -178,6 +185,67 @@ class PinInput extends StatefulWidget {
   /// Builder for the context menu (paste functionality).
   final EditableTextContextMenuBuilder? contextMenuBuilder;
 
+  /// Called when the clipboard contains valid PIN-like content on focus.
+  ///
+  /// This callback is triggered when the field gains focus and the clipboard
+  /// contains content that could be pasted. By default, content is considered
+  /// valid if it:
+  /// - Has the same length as the PIN field
+  /// - Contains only digits (when [keyboardType] is [TextInputType.number])
+  ///
+  /// Use this to show a "Paste 123456?" prompt or auto-paste confirmation.
+  ///
+  /// Example:
+  /// ```dart
+  /// PinInput(
+  ///   length: 6,
+  ///   onClipboardFound: (text) {
+  ///     showDialog(
+  ///       context: context,
+  ///       builder: (context) => AlertDialog(
+  ///         title: Text('Paste code?'),
+  ///         content: Text('Found: $text'),
+  ///         actions: [
+  ///           TextButton(
+  ///             onPressed: () => Navigator.pop(context),
+  ///             child: Text('Cancel'),
+  ///           ),
+  ///           TextButton(
+  ///             onPressed: () {
+  ///               controller.text = text;
+  ///               Navigator.pop(context);
+  ///             },
+  ///             child: Text('Paste'),
+  ///           ),
+  ///         ],
+  ///       ),
+  ///     );
+  ///   },
+  /// )
+  /// ```
+  final ValueChanged<String>? onClipboardFound;
+
+  /// Custom validator for clipboard content.
+  ///
+  /// If provided, this function is used instead of the default validation
+  /// to determine if clipboard content should trigger [onClipboardFound].
+  ///
+  /// Return `true` if the content is valid and should trigger the callback.
+  ///
+  /// Example:
+  /// ```dart
+  /// PinInput(
+  ///   length: 6,
+  ///   clipboardValidator: (text, length) {
+  ///     // Accept any 6-character alphanumeric code
+  ///     return text.length == length &&
+  ///            RegExp(r'^[A-Z0-9]+$').hasMatch(text);
+  ///   },
+  ///   onClipboardFound: (text) => print('Found: $text'),
+  /// )
+  /// ```
+  final bool Function(String text, int length)? clipboardValidator;
+
   /// Called when the text changes.
   final ValueChanged<String>? onChanged;
 
@@ -192,6 +260,29 @@ class PinInput extends StatefulWidget {
 
   /// Called when the widget is tapped.
   final VoidCallback? onTap;
+
+  /// Called when the widget is long pressed.
+  final VoidCallback? onLongPress;
+
+  /// Called when user taps outside the field.
+  ///
+  /// This can be used to dismiss the keyboard or trigger validation.
+  ///
+  /// Example:
+  /// ```dart
+  /// PinInput(
+  ///   length: 6,
+  ///   onTapOutside: (event) {
+  ///     FocusScope.of(context).unfocus();
+  ///   },
+  /// )
+  /// ```
+  final void Function(PointerDownEvent event)? onTapOutside;
+
+  /// The mouse cursor to show when hovering over the widget.
+  ///
+  /// Defaults to [SystemMouseCursors.text] when enabled.
+  final MouseCursor? mouseCursor;
 
   /// The brightness of the keyboard.
   final Brightness? keyboardAppearance;
@@ -395,8 +486,50 @@ class _PinInputState extends State<PinInput>
   void _onFocusChanged() {
     if (!_focusNode.hasFocus) {
       editableTextKey.currentState?.hideToolbar();
+    } else {
+      // Check clipboard when focus is gained
+      _checkClipboard();
     }
     if (mounted) setState(() {});
+  }
+
+  /// Checks the clipboard for valid PIN content and triggers callback if found.
+  Future<void> _checkClipboard() async {
+    if (widget.onClipboardFound == null) return;
+
+    try {
+      final clipboardData = await Clipboard.getData(Clipboard.kTextPlain);
+      final text = clipboardData?.text;
+
+      if (text == null || text.isEmpty) return;
+
+      final isValid = _validateClipboardContent(text);
+      if (isValid && mounted) {
+        widget.onClipboardFound?.call(text);
+      }
+    } catch (_) {
+      // Clipboard access may fail on some platforms, silently ignore
+    }
+  }
+
+  /// Validates clipboard content for PIN suitability.
+  bool _validateClipboardContent(String text) {
+    // Use custom validator if provided
+    if (widget.clipboardValidator != null) {
+      return widget.clipboardValidator!(text, widget.length);
+    }
+
+    // Default validation
+    // 1. Check length matches
+    if (text.length != widget.length) return false;
+
+    // 2. If numeric keyboard, check for digits only
+    if (widget.keyboardType == TextInputType.number) {
+      return RegExp(r'^[0-9]+$').hasMatch(text);
+    }
+
+    // 3. For other keyboard types, accept any text of correct length
+    return true;
   }
 
   void _onTextChanged() {
@@ -527,11 +660,14 @@ class _PinInputState extends State<PinInput>
   List<PinCellData> _buildCells() {
     final text = _textController.text;
     final cells = <PinCellData>[];
+    final focusedIndex = text.length; // The next input position
+    final isComplete = text.length == widget.length;
 
     for (int i = 0; i < widget.length; i++) {
       final isFilled = i < text.length;
-      final isFocused = _focusNode.hasFocus && i == text.length;
+      final isFocused = _focusNode.hasFocus && i == focusedIndex;
       final isLastEntered = i == text.length - 1 && text.isNotEmpty;
+      final isFollowing = i > focusedIndex;
 
       cells.add(PinCellData(
         index: i,
@@ -540,6 +676,8 @@ class _PinInputState extends State<PinInput>
         isFocused: isFocused,
         isError: _isError,
         isDisabled: !widget.enabled,
+        isFollowing: isFollowing,
+        isComplete: isComplete,
         wasJustEntered: _justEnteredIndices.contains(i),
         wasJustRemoved: _justRemovedIndices.contains(i),
         isBlinking: widget.obscureText &&
@@ -558,14 +696,18 @@ class _PinInputState extends State<PinInput>
     final selectionControls = widget.selectionControls ??
         (selectionEnabled ? getDefaultSelectionControls(context) : null);
 
-    Widget content = GestureDetector(
-      onTap: () {
-        if (widget.enabled && !_focusNode.hasFocus && !widget.readOnly) {
-          _requestFocusSafely();
-        }
-        widget.onTap?.call();
-      },
-      child: _gestureBuilder.buildGestureDetector(
+    Widget content = MouseRegion(
+      cursor: widget.mouseCursor ??
+          (widget.enabled ? SystemMouseCursors.text : SystemMouseCursors.basic),
+      child: GestureDetector(
+        onTap: () {
+          if (widget.enabled && !_focusNode.hasFocus && !widget.readOnly) {
+            _requestFocusSafely();
+          }
+          widget.onTap?.call();
+        },
+        onLongPress: widget.onLongPress,
+        child: _gestureBuilder.buildGestureDetector(
         behavior: HitTestBehavior.translucent,
         child: PinInputScope(
           cells: cells,
@@ -606,12 +748,21 @@ class _PinInputState extends State<PinInput>
           ),
         ),
       ),
+    ),
     );
 
     // Wrap with AutofillGroup if autofill is enabled
     if (widget.enableAutofill) {
       content = AutofillGroup(
         onDisposeAction: widget.autofillContextAction,
+        child: content,
+      );
+    }
+
+    // Wrap with TapRegion if onTapOutside is provided
+    if (widget.onTapOutside != null) {
+      content = TapRegion(
+        onTapOutside: widget.onTapOutside,
         child: content,
       );
     }

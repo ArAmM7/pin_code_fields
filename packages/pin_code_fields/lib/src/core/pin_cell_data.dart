@@ -24,6 +24,18 @@ class PinCellData {
   /// Whether the PIN field is disabled or read-only.
   final bool isDisabled;
 
+  /// Whether this cell comes after the focused cell.
+  ///
+  /// Cells with higher indices than the focused cell are considered "following".
+  /// Use this for subtle visual differentiation (e.g., more muted appearance).
+  final bool isFollowing;
+
+  /// Whether all cells in the PIN field are filled.
+  ///
+  /// When true, the entire PIN is complete. Use this for success indication
+  /// or special styling when the user has finished entering the PIN.
+  final bool isComplete;
+
   /// Whether a character was just entered at this cell (true for one frame only).
   ///
   /// Use this to trigger entry animations.
@@ -48,6 +60,8 @@ class PinCellData {
     this.isFilled = false,
     this.isError = false,
     this.isDisabled = false,
+    this.isFollowing = false,
+    this.isComplete = false,
     this.wasJustEntered = false,
     this.wasJustRemoved = false,
     this.isBlinking = false,
@@ -61,6 +75,8 @@ class PinCellData {
     bool? isFilled,
     bool? isError,
     bool? isDisabled,
+    bool? isFollowing,
+    bool? isComplete,
     bool? wasJustEntered,
     bool? wasJustRemoved,
     bool? isBlinking,
@@ -72,6 +88,8 @@ class PinCellData {
       isFilled: isFilled ?? this.isFilled,
       isError: isError ?? this.isError,
       isDisabled: isDisabled ?? this.isDisabled,
+      isFollowing: isFollowing ?? this.isFollowing,
+      isComplete: isComplete ?? this.isComplete,
       wasJustEntered: wasJustEntered ?? this.wasJustEntered,
       wasJustRemoved: wasJustRemoved ?? this.wasJustRemoved,
       isBlinking: isBlinking ?? this.isBlinking,
@@ -88,6 +106,8 @@ class PinCellData {
         other.isFilled == isFilled &&
         other.isError == isError &&
         other.isDisabled == isDisabled &&
+        other.isFollowing == isFollowing &&
+        other.isComplete == isComplete &&
         other.wasJustEntered == wasJustEntered &&
         other.wasJustRemoved == wasJustRemoved &&
         other.isBlinking == isBlinking;
@@ -101,6 +121,8 @@ class PinCellData {
         isFilled,
         isError,
         isDisabled,
+        isFollowing,
+        isComplete,
         wasJustEntered,
         wasJustRemoved,
         isBlinking,
@@ -110,7 +132,8 @@ class PinCellData {
   String toString() {
     return 'PinCellData(index: $index, character: $character, '
         'isFocused: $isFocused, isFilled: $isFilled, isError: $isError, '
-        'isDisabled: $isDisabled, wasJustEntered: $wasJustEntered, '
+        'isDisabled: $isDisabled, isFollowing: $isFollowing, '
+        'isComplete: $isComplete, wasJustEntered: $wasJustEntered, '
         'wasJustRemoved: $wasJustRemoved, isBlinking: $isBlinking)';
   }
 }

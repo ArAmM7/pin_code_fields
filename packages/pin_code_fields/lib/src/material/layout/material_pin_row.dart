@@ -16,9 +16,11 @@ class MaterialPinRow extends StatelessWidget {
     this.obscureText = false,
     this.obscuringWidget,
     this.hintCharacter,
+    this.hintWidget,
     this.hintStyle,
     this.separatorBuilder,
     this.mainAxisAlignment = MainAxisAlignment.center,
+    this.crossAxisAlignment = CrossAxisAlignment.center,
   });
 
   /// List of cell data for each PIN position.
@@ -36,7 +38,13 @@ class MaterialPinRow extends StatelessWidget {
   /// Hint character to show in empty cells.
   ///
   /// If null, falls back to [MaterialPinThemeData.hintCharacter].
+  /// If [hintWidget] is provided, this is ignored.
   final String? hintCharacter;
+
+  /// Custom widget to show in empty cells.
+  ///
+  /// When provided, this widget is displayed instead of [hintCharacter].
+  final Widget? hintWidget;
 
   /// Style for hint character.
   ///
@@ -49,11 +57,15 @@ class MaterialPinRow extends StatelessWidget {
   /// How the cells should be aligned horizontally.
   final MainAxisAlignment mainAxisAlignment;
 
+  /// How the cells should be aligned vertically.
+  final CrossAxisAlignment crossAxisAlignment;
+
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: mainAxisAlignment,
+      crossAxisAlignment: crossAxisAlignment,
       children: _buildChildren(context),
     );
   }
@@ -70,6 +82,7 @@ class MaterialPinRow extends StatelessWidget {
           obscureText: obscureText,
           obscuringWidget: obscuringWidget,
           hintCharacter: hintCharacter,
+          hintWidget: hintWidget,
           hintStyle: hintStyle,
         ),
       );

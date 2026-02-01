@@ -67,7 +67,17 @@ class MaterialPinTheme {
     this.borderColor,
     this.focusedBorderColor,
     this.filledBorderColor,
+    this.followingFillColor,
+    this.followingBorderColor,
+    this.completeFillColor,
+    this.completeBorderColor,
+    this.completeTextStyle,
     this.errorColor,
+    this.errorFillColor,
+    this.errorBorderColor,
+    this.errorBorderWidth,
+    this.errorTextStyle,
+    this.errorBoxShadows,
     this.disabledColor,
     this.disabledFillColor,
     this.disabledBorderColor,
@@ -86,6 +96,7 @@ class MaterialPinTheme {
     this.showCursor = true,
     this.animateCursor = true,
     this.cursorBlinkDuration = const Duration(milliseconds: 500),
+    this.cursorWidget,
     // Shadows
     this.elevation = 0,
     this.focusedElevation = 0,
@@ -141,8 +152,59 @@ class MaterialPinTheme {
   /// Border color for filled cells.
   final Color? filledBorderColor;
 
-  /// Color used for error states.
+  /// Fill color for cells that come after the focused cell.
+  ///
+  /// If not provided, uses [fillColor].
+  final Color? followingFillColor;
+
+  /// Border color for cells that come after the focused cell.
+  ///
+  /// If not provided, uses [borderColor].
+  final Color? followingBorderColor;
+
+  /// Fill color for all cells when PIN is complete.
+  ///
+  /// If not provided, uses [filledFillColor].
+  final Color? completeFillColor;
+
+  /// Border color for all cells when PIN is complete.
+  ///
+  /// If not provided, uses [filledBorderColor].
+  final Color? completeBorderColor;
+
+  /// Text style for all cells when PIN is complete.
+  ///
+  /// If not provided, uses [textStyle].
+  final TextStyle? completeTextStyle;
+
+  /// Base color used for error states.
+  ///
+  /// If [errorFillColor], [errorBorderColor], or [errorTextStyle] are not
+  /// provided, they will be derived from this color.
   final Color? errorColor;
+
+  /// Fill color for cells in error state.
+  ///
+  /// If not provided, defaults to [errorColor] with 10% opacity.
+  final Color? errorFillColor;
+
+  /// Border color for cells in error state.
+  ///
+  /// If not provided, defaults to [errorColor].
+  final Color? errorBorderColor;
+
+  /// Border width for cells in error state.
+  ///
+  /// If not provided, defaults to [focusedBorderWidth] for emphasis.
+  final double? errorBorderWidth;
+
+  /// Text style for cells in error state.
+  ///
+  /// If not provided, defaults to [textStyle] with [errorColor].
+  final TextStyle? errorTextStyle;
+
+  /// Box shadows for cells in error state.
+  final List<BoxShadow>? errorBoxShadows;
 
   /// Color used for disabled state.
   ///
@@ -205,6 +267,12 @@ class MaterialPinTheme {
   /// Duration of one cursor blink cycle.
   final Duration cursorBlinkDuration;
 
+  /// Custom widget to use as cursor.
+  ///
+  /// When provided, this widget is used instead of the default line cursor.
+  /// The widget will be wrapped with the blink animation if [animateCursor] is true.
+  final Widget? cursorWidget;
+
   /// Elevation for cells.
   final double elevation;
 
@@ -265,7 +333,17 @@ class MaterialPinTheme {
     Color? borderColor,
     Color? focusedBorderColor,
     Color? filledBorderColor,
+    Color? followingFillColor,
+    Color? followingBorderColor,
+    Color? completeFillColor,
+    Color? completeBorderColor,
+    TextStyle? completeTextStyle,
     Color? errorColor,
+    Color? errorFillColor,
+    Color? errorBorderColor,
+    double? errorBorderWidth,
+    TextStyle? errorTextStyle,
+    List<BoxShadow>? errorBoxShadows,
     Color? disabledColor,
     Color? disabledFillColor,
     Color? disabledBorderColor,
@@ -281,6 +359,7 @@ class MaterialPinTheme {
     bool? showCursor,
     bool? animateCursor,
     Duration? cursorBlinkDuration,
+    Widget? cursorWidget,
     double? elevation,
     double? focusedElevation,
     List<BoxShadow>? boxShadows,
@@ -305,7 +384,17 @@ class MaterialPinTheme {
       borderColor: borderColor ?? this.borderColor,
       focusedBorderColor: focusedBorderColor ?? this.focusedBorderColor,
       filledBorderColor: filledBorderColor ?? this.filledBorderColor,
+      followingFillColor: followingFillColor ?? this.followingFillColor,
+      followingBorderColor: followingBorderColor ?? this.followingBorderColor,
+      completeFillColor: completeFillColor ?? this.completeFillColor,
+      completeBorderColor: completeBorderColor ?? this.completeBorderColor,
+      completeTextStyle: completeTextStyle ?? this.completeTextStyle,
       errorColor: errorColor ?? this.errorColor,
+      errorFillColor: errorFillColor ?? this.errorFillColor,
+      errorBorderColor: errorBorderColor ?? this.errorBorderColor,
+      errorBorderWidth: errorBorderWidth ?? this.errorBorderWidth,
+      errorTextStyle: errorTextStyle ?? this.errorTextStyle,
+      errorBoxShadows: errorBoxShadows ?? this.errorBoxShadows,
       disabledColor: disabledColor ?? this.disabledColor,
       disabledFillColor: disabledFillColor ?? this.disabledFillColor,
       disabledBorderColor: disabledBorderColor ?? this.disabledBorderColor,
@@ -321,6 +410,7 @@ class MaterialPinTheme {
       showCursor: showCursor ?? this.showCursor,
       animateCursor: animateCursor ?? this.animateCursor,
       cursorBlinkDuration: cursorBlinkDuration ?? this.cursorBlinkDuration,
+      cursorWidget: cursorWidget ?? this.cursorWidget,
       elevation: elevation ?? this.elevation,
       focusedElevation: focusedElevation ?? this.focusedElevation,
       boxShadows: boxShadows ?? this.boxShadows,
@@ -343,10 +433,11 @@ class MaterialPinTheme {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    // Resolve base disabled color first (used for fallbacks)
+    // Resolve base colors first (used for fallbacks)
+    final resolvedTextStyle = textStyle ?? textTheme.headlineSmall;
+    final resolvedErrorColor = errorColor ?? colorScheme.error;
     final resolvedDisabledColor =
         disabledColor ?? colorScheme.onSurface.withValues(alpha: 0.38);
-    final resolvedTextStyle = textStyle ?? textTheme.headlineSmall;
 
     return MaterialPinThemeData(
       shape: shape,
@@ -361,7 +452,23 @@ class MaterialPinTheme {
       borderColor: borderColor ?? colorScheme.outline,
       focusedBorderColor: focusedBorderColor ?? colorScheme.primary,
       filledBorderColor: filledBorderColor ?? colorScheme.outline,
-      errorColor: errorColor ?? colorScheme.error,
+      followingFillColor:
+          followingFillColor ?? fillColor ?? colorScheme.surfaceContainerHighest,
+      followingBorderColor:
+          followingBorderColor ?? borderColor ?? colorScheme.outline,
+      completeFillColor:
+          completeFillColor ?? filledFillColor ?? colorScheme.surfaceContainerHighest,
+      completeBorderColor:
+          completeBorderColor ?? filledBorderColor ?? colorScheme.outline,
+      completeTextStyle: completeTextStyle ?? resolvedTextStyle,
+      errorColor: resolvedErrorColor,
+      errorFillColor:
+          errorFillColor ?? resolvedErrorColor.withValues(alpha: 0.1),
+      errorBorderColor: errorBorderColor ?? resolvedErrorColor,
+      errorBorderWidth: errorBorderWidth ?? focusedBorderWidth,
+      errorTextStyle:
+          errorTextStyle ?? resolvedTextStyle?.copyWith(color: resolvedErrorColor),
+      errorBoxShadows: errorBoxShadows,
       disabledColor: resolvedDisabledColor,
       disabledFillColor:
           disabledFillColor ?? resolvedDisabledColor.withValues(alpha: 0.1),
@@ -379,6 +486,7 @@ class MaterialPinTheme {
       showCursor: showCursor,
       animateCursor: animateCursor,
       cursorBlinkDuration: cursorBlinkDuration,
+      cursorWidget: cursorWidget,
       elevation: elevation,
       focusedElevation: focusedElevation,
       boxShadows: boxShadows,
@@ -412,7 +520,17 @@ class MaterialPinThemeData {
     required this.borderColor,
     required this.focusedBorderColor,
     required this.filledBorderColor,
+    required this.followingFillColor,
+    required this.followingBorderColor,
+    required this.completeFillColor,
+    required this.completeBorderColor,
+    required this.completeTextStyle,
     required this.errorColor,
+    required this.errorFillColor,
+    required this.errorBorderColor,
+    required this.errorBorderWidth,
+    required this.errorTextStyle,
+    required this.errorBoxShadows,
     required this.disabledColor,
     required this.disabledFillColor,
     required this.disabledBorderColor,
@@ -428,6 +546,7 @@ class MaterialPinThemeData {
     required this.showCursor,
     required this.animateCursor,
     required this.cursorBlinkDuration,
+    required this.cursorWidget,
     required this.elevation,
     required this.focusedElevation,
     required this.boxShadows,
@@ -452,7 +571,17 @@ class MaterialPinThemeData {
   final Color borderColor;
   final Color focusedBorderColor;
   final Color filledBorderColor;
+  final Color followingFillColor;
+  final Color followingBorderColor;
+  final Color completeFillColor;
+  final Color completeBorderColor;
+  final TextStyle? completeTextStyle;
   final Color errorColor;
+  final Color errorFillColor;
+  final Color errorBorderColor;
+  final double errorBorderWidth;
+  final TextStyle? errorTextStyle;
+  final List<BoxShadow>? errorBoxShadows;
   final Color disabledColor;
   final Color disabledFillColor;
   final Color disabledBorderColor;
@@ -468,6 +597,7 @@ class MaterialPinThemeData {
   final bool showCursor;
   final bool animateCursor;
   final Duration cursorBlinkDuration;
+  final Widget? cursorWidget;
   final double elevation;
   final double focusedElevation;
   final List<BoxShadow>? boxShadows;

@@ -6,27 +6,36 @@ import 'package:flutter/material.dart';
 class CursorBlink extends StatefulWidget {
   const CursorBlink({
     super.key,
-    required this.color,
-    required this.width,
-    required this.height,
+    this.color,
+    this.width,
+    this.height,
     this.animate = true,
     this.duration = const Duration(milliseconds: 500),
-  });
+    this.child,
+  }) : assert(
+         child != null || (color != null && width != null && height != null),
+         'Either child must be provided, or color, width, and height must all be provided',
+       );
 
-  /// The color of the cursor.
-  final Color color;
+  /// The color of the cursor (used when [child] is null).
+  final Color? color;
 
-  /// The width of the cursor.
-  final double width;
+  /// The width of the cursor (used when [child] is null).
+  final double? width;
 
-  /// The height of the cursor.
-  final double height;
+  /// The height of the cursor (used when [child] is null).
+  final double? height;
 
   /// Whether to animate the cursor.
   final bool animate;
 
   /// Duration of one blink cycle.
   final Duration duration;
+
+  /// Custom widget to use as cursor.
+  ///
+  /// When provided, this widget is used instead of the default line cursor.
+  final Widget? child;
 
   @override
   State<CursorBlink> createState() => _CursorBlinkState();
@@ -89,14 +98,17 @@ class _CursorBlinkState extends State<CursorBlink>
   }
 
   Widget _buildCursor(double opacity) {
-    return Center(
-      child: Opacity(
-        opacity: opacity,
-        child: Container(
+    final cursorWidget = widget.child ??
+        Container(
           width: widget.width,
           height: widget.height,
           color: widget.color,
-        ),
+        );
+
+    return Center(
+      child: Opacity(
+        opacity: opacity,
+        child: cursorWidget,
       ),
     );
   }

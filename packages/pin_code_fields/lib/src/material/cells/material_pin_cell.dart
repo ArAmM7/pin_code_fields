@@ -30,9 +30,11 @@ class PinCellStateStyle {
   /// Priority order (first match wins):
   /// 1. Disabled - grayed out appearance
   /// 2. Error - error color with emphasis
-  /// 3. Focused - highlighted with focus indicators
-  /// 4. Filled - has content, normal appearance
-  /// 5. Empty - default appearance
+  /// 3. Complete - all cells filled (success indication)
+  /// 4. Focused - highlighted with focus indicators
+  /// 5. Filled - has content, normal appearance
+  /// 6. Following - empty cells after the focused cell
+  /// 7. Empty - default appearance
   factory PinCellStateStyle.fromState(
     PinCellData data,
     MaterialPinThemeData theme,
@@ -47,9 +49,20 @@ class PinCellStateStyle {
 
     if (data.isError) {
       return PinCellStateStyle(
-        fillColor: theme.errorColor.withValues(alpha: 0.1),
-        borderColor: theme.errorColor,
-        borderWidth: theme.focusedBorderWidth,
+        fillColor: theme.errorFillColor,
+        borderColor: theme.errorBorderColor,
+        borderWidth: theme.errorBorderWidth,
+        boxShadows: theme.errorBoxShadows,
+      );
+    }
+
+    // Complete state - when all cells are filled
+    if (data.isComplete && data.isFilled) {
+      return PinCellStateStyle(
+        fillColor: theme.completeFillColor,
+        borderColor: theme.completeBorderColor,
+        borderWidth: theme.borderWidth,
+        boxShadows: theme.boxShadows,
       );
     }
 
@@ -71,7 +84,17 @@ class PinCellStateStyle {
       );
     }
 
-    // Empty state (default)
+    // Following state - empty cells after the focused cell
+    if (data.isFollowing) {
+      return PinCellStateStyle(
+        fillColor: theme.followingFillColor,
+        borderColor: theme.followingBorderColor,
+        borderWidth: theme.borderWidth,
+        boxShadows: theme.boxShadows,
+      );
+    }
+
+    // Empty state (default) - cells before the focused cell
     return PinCellStateStyle(
       fillColor: theme.fillColor,
       borderColor: theme.borderColor,
@@ -93,6 +116,7 @@ class MaterialPinCell extends StatelessWidget {
     this.obscureText = false,
     this.obscuringWidget,
     this.hintCharacter,
+    this.hintWidget,
     this.hintStyle,
   });
 
@@ -111,7 +135,13 @@ class MaterialPinCell extends StatelessWidget {
   /// Hint character to show in empty cells.
   ///
   /// If null, falls back to [MaterialPinThemeData.hintCharacter].
+  /// If [hintWidget] is provided, this is ignored.
   final String? hintCharacter;
+
+  /// Custom widget to show in empty cells.
+  ///
+  /// When provided, this widget is displayed instead of [hintCharacter].
+  final Widget? hintWidget;
 
   /// Style for hint character.
   ///
@@ -133,6 +163,7 @@ class MaterialPinCell extends StatelessWidget {
         obscureText: obscureText,
         obscuringWidget: obscuringWidget,
         hintCharacter: hintCharacter,
+        hintWidget: hintWidget,
         hintStyle: hintStyle,
       ),
     );

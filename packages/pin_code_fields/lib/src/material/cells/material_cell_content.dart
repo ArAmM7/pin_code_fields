@@ -17,6 +17,7 @@ class MaterialCellContent extends StatelessWidget {
     this.obscureText = false,
     this.obscuringWidget,
     this.hintCharacter,
+    this.hintWidget,
     this.hintStyle,
   });
 
@@ -35,7 +36,13 @@ class MaterialCellContent extends StatelessWidget {
   /// Hint character to show in empty cells.
   ///
   /// If null, falls back to [MaterialPinThemeData.hintCharacter].
+  /// If [hintWidget] is provided, this is ignored.
   final String? hintCharacter;
+
+  /// Custom widget to show in empty cells.
+  ///
+  /// When provided, this widget is displayed instead of [hintCharacter].
+  final Widget? hintWidget;
 
   /// Style for hint character.
   ///
@@ -70,7 +77,14 @@ class MaterialCellContent extends StatelessWidget {
       return _buildCursor(context);
     }
 
-    // Empty cell - show hint or nothing
+    // Empty cell - show hint widget, hint character, or nothing
+    if (hintWidget != null) {
+      return KeyedSubtree(
+        key: ValueKey('hint_widget_${data.index}'),
+        child: hintWidget!,
+      );
+    }
+
     final effectiveHintChar = hintCharacter ?? theme.hintCharacter;
     if (effectiveHintChar != null) {
       return _buildHint(context, effectiveHintChar);
@@ -85,13 +99,23 @@ class MaterialCellContent extends StatelessWidget {
 
     // Use custom obscuring widget if provided
     if (shouldObscure && obscuringWidget != null) {
-      // Apply opacity for disabled state
       Widget child = KeyedSubtree(
         key: ValueKey('obscure_widget_${data.index}'),
         child: obscuringWidget!,
       );
+      // Apply opacity for disabled state
       if (data.isDisabled) {
         child = Opacity(opacity: 0.38, child: child);
+      }
+      // Apply error color tint if in error state
+      if (data.isError) {
+        child = ColorFiltered(
+          colorFilter: ColorFilter.mode(
+            theme.errorColor.withValues(alpha: 0.8),
+            BlendMode.srcATop,
+          ),
+          child: child,
+        );
       }
       return child;
     }
@@ -100,9 +124,17 @@ class MaterialCellContent extends StatelessWidget {
     final displayChar =
         shouldObscure ? theme.obscuringCharacter : data.character!;
 
-    // Apply disabled text style when disabled
-    final effectiveTextStyle =
-        data.isDisabled ? theme.disabledTextStyle : theme.textStyle;
+    // Apply state-specific text style (priority: disabled > error > complete > normal)
+    final TextStyle? effectiveTextStyle;
+    if (data.isDisabled) {
+      effectiveTextStyle = theme.disabledTextStyle;
+    } else if (data.isError) {
+      effectiveTextStyle = theme.errorTextStyle;
+    } else if (data.isComplete) {
+      effectiveTextStyle = theme.completeTextStyle;
+    } else {
+      effectiveTextStyle = theme.textStyle;
+    }
 
     Widget textWidget = Text(
       displayChar,
@@ -110,8 +142,8 @@ class MaterialCellContent extends StatelessWidget {
       style: effectiveTextStyle,
     );
 
-    // Apply gradient if provided (only when not disabled)
-    if (theme.textGradient != null && !data.isDisabled) {
+    // Apply gradient if provided (only when not disabled or in error)
+    if (theme.textGradient != null && !data.isDisabled && !data.isError) {
       textWidget = ShaderMask(
         shaderCallback: (bounds) => theme.textGradient!.createShader(bounds),
         blendMode: BlendMode.srcIn,
@@ -123,6 +155,17 @@ class MaterialCellContent extends StatelessWidget {
   }
 
   Widget _buildCursor(BuildContext context) {
+    // Use custom cursor widget if provided
+    if (theme.cursorWidget != null) {
+      return CursorBlink(
+        key: const ValueKey('cursor'),
+        animate: theme.animateCursor,
+        duration: theme.cursorBlinkDuration,
+        child: theme.cursorWidget,
+      );
+    }
+
+    // Default line cursor
     final cursorHeight = theme.cursorHeight ??
         (theme.textStyle?.fontSize ?? 20) + 8;
 
