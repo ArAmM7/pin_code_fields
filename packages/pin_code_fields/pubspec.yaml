@@ -5,6 +5,29 @@ homepage: https://github.com/adar2378/pin_code_fields
 repository: https://github.com/adar2378/pin_code_fields
 issue_tracker: https://github.com/adar2378/pin_code_fields/issues
 
+topics:
+  - ui
+  - widgets
+  - pin-code
+  - otp
+  - input
+
+screenshots:
+  - description: 'Material PIN field with outlined style'
+    path: screenshots/outlined.png
+  - description: 'Material PIN field with filled style'
+    path: screenshots/filled.png
+  - description: 'Material PIN field with underlined style'
+    path: screenshots/underlined.png
+
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  web:
+  windows:
+
 environment:
   sdk: ^3.5.0
   flutter: ">=3.0.0"

@@ -5,6 +5,29 @@ homepage: https://github.com/adar2378/pin_code_fields
 repository: https://github.com/adar2378/pin_code_fields
 issue_tracker: https://github.com/adar2378/pin_code_fields/issues
 
+topics:
+  - ui
+  - widgets
+  - pin-code
+  - otp
+  - glass-effect
+
+screenshots:
+  - description: 'Blended glass PIN field style'
+    path: screenshots/blended.png
+  - description: 'Separate glass PIN field style'
+    path: screenshots/separate.png
+  - description: 'Unified glass PIN field style'
+    path: screenshots/unified.png
+
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  web:
+  windows:
+
 environment:
   sdk: ^3.5.0
   flutter: ">=3.22.0"
@@ -19,4 +42,4 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^4.0.0
+  flutter_lints: ^5.0.0
