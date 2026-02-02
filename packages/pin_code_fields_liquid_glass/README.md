@@ -4,6 +4,21 @@ iOS 26 Liquid Glass styled PIN input field for Flutter.
 
 Built on top of [pin_code_fields](https://pub.dev/packages/pin_code_fields) with GPU-accelerated glass effects from [liquid_glass_renderer](https://pub.dev/packages/liquid_glass_renderer).
 
+## Demos
+
+<table>
+  <tr>
+    <td align="center"><b>OTP Verification</b></td>
+    <td align="center"><b>Lock Screen</b></td>
+    <td align="center"><b>Playground</b></td>
+  </tr>
+  <tr>
+    <td><img src="https://raw.githubusercontent.com/adar2378/pin_code_fields/main/packages/pin_code_fields_liquid_glass/screenshots/otp_verification.gif" width="200"/></td>
+    <td><img src="https://raw.githubusercontent.com/adar2378/pin_code_fields/main/packages/pin_code_fields_liquid_glass/screenshots/lock_screen.gif" width="200"/></td>
+    <td><img src="https://raw.githubusercontent.com/adar2378/pin_code_fields/main/packages/pin_code_fields_liquid_glass/screenshots/playground.gif" width="200"/></td>
+  </tr>
+</table>
+
 ## Requirements
 
 This package requires the **Impeller rendering engine** and only works on:

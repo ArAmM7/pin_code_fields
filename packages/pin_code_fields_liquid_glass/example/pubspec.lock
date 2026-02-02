@@ -180,12 +180,12 @@ packages:
     source: hosted
     version: "1.9.1"
   pin_code_fields:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       path: "../../pin_code_fields"
       relative: true
     source: path
-    version: "9.0.0-dev.1"
+    version: "9.0.0-dev.3"
   pin_code_fields_liquid_glass:
     dependency: "direct main"
     description:

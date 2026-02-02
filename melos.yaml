@@ -3,6 +3,8 @@ name: pin_code_fields
 packages:
   - packages/pin_code_fields
   - packages/pin_code_fields/example
+  - packages/pin_code_fields_liquid_glass
+  - packages/pin_code_fields_liquid_glass/example
 
 scripts:
   analyze:

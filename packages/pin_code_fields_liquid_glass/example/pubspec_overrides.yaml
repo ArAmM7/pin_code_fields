@@ -1,0 +1,6 @@
+# melos_managed_dependency_overrides: pin_code_fields,pin_code_fields_liquid_glass
+dependency_overrides:
+  pin_code_fields:
+    path: ../../pin_code_fields
+  pin_code_fields_liquid_glass:
+    path: ..
