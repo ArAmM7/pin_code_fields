@@ -85,6 +85,8 @@ class MaterialPinField extends StatefulWidget {
     this.errorText,
     this.errorBuilder,
     this.errorTextStyle,
+    // Accessibility
+    this.semanticLabel,
   }) : assert(length > 0, 'Length must be greater than 0');
 
   /// Number of PIN cells.
@@ -295,6 +297,22 @@ class MaterialPinField extends StatefulWidget {
   /// If not specified, uses the theme's error color with body text style.
   final TextStyle? errorTextStyle;
 
+  /// Semantic label for accessibility.
+  ///
+  /// This label is announced by screen readers to describe the PIN field.
+  /// If not provided, a default label based on the field length is used
+  /// (e.g., "6-digit PIN code field").
+  ///
+  /// Example:
+  /// ```dart
+  /// MaterialPinField(
+  ///   length: 6,
+  ///   semanticLabel: 'Enter verification code',
+  ///   // ...
+  /// )
+  /// ```
+  final String? semanticLabel;
+
   @override
   State<MaterialPinField> createState() => _MaterialPinFieldState();
 }
@@ -399,6 +417,7 @@ class _MaterialPinFieldState extends State<MaterialPinField>
       mouseCursor: widget.mouseCursor,
       keyboardAppearance: widget.keyboardAppearance,
       scrollPadding: widget.scrollPadding,
+      semanticLabel: widget.semanticLabel,
       builder: (context, cells) {
         return MaterialPinRow(
           cells: cells,

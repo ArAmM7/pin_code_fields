@@ -1,3 +1,4 @@
+import 'dart:ui' show SemanticsFlag;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
@@ -190,6 +191,223 @@ void main() {
       await tester.pump();
 
       expect(capturedCells!.every((c) => c.isFilled), true);
+    });
+
+    group('Semantics', () {
+      testWidgets('provides default semantic label based on length',
+          (tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: PinInput(
+                length: 6,
+                builder: (context, cells) => Row(
+                  children: cells.map((c) => Text(c.character ?? '-')).toList(),
+                ),
+              ),
+            ),
+          ),
+        );
+
+        // Find the Semantics widget by looking for one with our label pattern
+        final semanticsFinder = find.byWidgetPredicate((widget) {
+          if (widget is Semantics) {
+            return widget.properties.label?.contains('PIN code field') ?? false;
+          }
+          return false;
+        });
+        expect(semanticsFinder, findsOneWidget);
+
+        // Verify the Semantics widget has correct label
+        final semanticsWidget = tester.widget<Semantics>(semanticsFinder);
+        expect(semanticsWidget.properties.label, '6-digit PIN code field');
+      });
+
+      testWidgets('uses custom semantic label when provided', (tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: PinInput(
+                length: 4,
+                semanticLabel: 'Enter verification code',
+                builder: (context, cells) => Row(
+                  children: cells.map((c) => Text(c.character ?? '-')).toList(),
+                ),
+              ),
+            ),
+          ),
+        );
+
+        final semanticsFinder = find.byWidgetPredicate((widget) {
+          if (widget is Semantics) {
+            return widget.properties.label == 'Enter verification code';
+          }
+          return false;
+        });
+        expect(semanticsFinder, findsOneWidget);
+
+        // Verify the Semantics widget has correct label
+        final semanticsWidget = tester.widget<Semantics>(semanticsFinder);
+        expect(semanticsWidget.properties.label, 'Enter verification code');
+      });
+
+      testWidgets('provides semantic hint about remaining digits',
+          (tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: PinInput(
+                length: 4,
+                autoFocus: true,
+                builder: (context, cells) => Row(
+                  children: cells.map((c) => Text(c.character ?? '-')).toList(),
+                ),
+              ),
+            ),
+          ),
+        );
+
+        await tester.pump();
+
+        // Find PIN semantics widget
+        Finder findPinSemantics() => find.byWidgetPredicate((widget) {
+              if (widget is Semantics) {
+                return widget.properties.label?.contains('PIN code field') ??
+                    false;
+              }
+              return false;
+            });
+
+        // Initially empty - should hint for 4 digits
+        var semantics = tester.getSemantics(findPinSemantics());
+        expect(semantics.hint, 'Enter 4 more digits');
+
+        // Enter 3 digits
+        await tester.enterText(find.byType(EditableText), '123');
+        await tester.pump();
+
+        semantics = tester.getSemantics(findPinSemantics());
+        expect(semantics.hint, 'Enter 1 more digit');
+
+        // Complete PIN
+        await tester.enterText(find.byType(EditableText), '1234');
+        await tester.pump();
+
+        semantics = tester.getSemantics(findPinSemantics());
+        expect(semantics.hint, 'PIN complete');
+      });
+
+      testWidgets('exposes entered value in semantics', (tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: PinInput(
+                length: 4,
+                autoFocus: true,
+                builder: (context, cells) => Row(
+                  children: cells.map((c) => Text(c.character ?? '-')).toList(),
+                ),
+              ),
+            ),
+          ),
+        );
+
+        await tester.pump();
+        await tester.enterText(find.byType(EditableText), '12');
+        await tester.pump();
+
+        final semanticsFinder = find.byWidgetPredicate((widget) {
+          if (widget is Semantics) {
+            return widget.properties.label?.contains('PIN code field') ?? false;
+          }
+          return false;
+        });
+        final semantics = tester.getSemantics(semanticsFinder);
+        expect(semantics.value, '12');
+      });
+
+      testWidgets('masks value when obscured', (tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: PinInput(
+                length: 4,
+                autoFocus: true,
+                obscureText: true,
+                builder: (context, cells) => Row(
+                  children: cells.map((c) => Text(c.character ?? '-')).toList(),
+                ),
+              ),
+            ),
+          ),
+        );
+
+        await tester.pump();
+        await tester.enterText(find.byType(EditableText), '12');
+        await tester.pump();
+
+        final semanticsFinder = find.byWidgetPredicate((widget) {
+          if (widget is Semantics) {
+            return widget.properties.label?.contains('PIN code field') ?? false;
+          }
+          return false;
+        });
+        final semantics = tester.getSemantics(semanticsFinder);
+        // Should show masked value, not actual digits
+        expect(semantics.value, '●●');
+      });
+
+      testWidgets('marks as text field in semantics', (tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: PinInput(
+                length: 4,
+                builder: (context, cells) => Row(
+                  children: cells.map((c) => Text(c.character ?? '-')).toList(),
+                ),
+              ),
+            ),
+          ),
+        );
+
+        final semanticsFinder = find.byWidgetPredicate((widget) {
+          if (widget is Semantics) {
+            return widget.properties.label?.contains('PIN code field') ?? false;
+          }
+          return false;
+        });
+        final semantics = tester.getSemantics(semanticsFinder);
+        // ignore: deprecated_member_use
+        expect(semantics.hasFlag(SemanticsFlag.isTextField), true);
+      });
+
+      testWidgets('reflects enabled/disabled state in semantics',
+          (tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: PinInput(
+                length: 4,
+                enabled: false,
+                builder: (context, cells) => Row(
+                  children: cells.map((c) => Text(c.character ?? '-')).toList(),
+                ),
+              ),
+            ),
+          ),
+        );
+
+        final semanticsFinder = find.byWidgetPredicate((widget) {
+          if (widget is Semantics) {
+            return widget.properties.label?.contains('PIN code field') ?? false;
+          }
+          return false;
+        });
+        final semantics = tester.getSemantics(semanticsFinder);
+        // ignore: deprecated_member_use
+        expect(semantics.hasFlag(SemanticsFlag.isEnabled), false);
+      });
     });
   });
 }

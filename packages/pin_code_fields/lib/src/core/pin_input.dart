@@ -87,6 +87,8 @@ class PinInput extends StatefulWidget {
     // Autofill
     this.enableAutofill = false,
     this.autofillContextAction = AutofillContextAction.commit,
+    // Semantics
+    this.semanticLabel,
   })  : assert(length > 0, 'Length must be greater than 0'),
         assert(
           obscuringCharacter.length > 0,
@@ -303,6 +305,21 @@ class PinInput extends StatefulWidget {
   /// - [AutofillContextAction.cancel]: Tell the system to discard the data
   ///   (appropriate for one-time codes like OTP)
   final AutofillContextAction autofillContextAction;
+
+  /// Semantic label for accessibility.
+  ///
+  /// This label is announced by screen readers to describe the PIN field.
+  /// If not provided, a default label based on the field length is used.
+  ///
+  /// Example:
+  /// ```dart
+  /// PinInput(
+  ///   length: 6,
+  ///   semanticLabel: 'Enter 6-digit verification code',
+  ///   // ...
+  /// )
+  /// ```
+  final String? semanticLabel;
 
   @override
   State<PinInput> createState() => _PinInputState();
@@ -774,6 +791,25 @@ class _PinInputState extends State<PinInput>
       );
     }
 
-    return content;
+    // Wrap with Semantics for accessibility
+    final currentText = _textController.text;
+    final filledCount = currentText.length;
+    final semanticValue = widget.obscureText
+        ? '●' * filledCount // Don't reveal obscured text
+        : currentText;
+    final semanticHint = filledCount < widget.length
+        ? 'Enter ${widget.length - filledCount} more ${widget.length - filledCount == 1 ? 'digit' : 'digits'}'
+        : 'PIN complete';
+
+    return Semantics(
+      label: widget.semanticLabel ?? '${widget.length}-digit PIN code field',
+      value: semanticValue.isNotEmpty ? semanticValue : null,
+      hint: semanticHint,
+      textField: true,
+      enabled: widget.enabled,
+      focused: _focusNode.hasFocus,
+      obscured: widget.obscureText,
+      child: content,
+    );
   }
 }
