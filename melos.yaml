@@ -5,6 +5,7 @@ packages:
   - packages/pin_code_fields/example
   - packages/pin_code_fields_liquid_glass
   - packages/pin_code_fields_liquid_glass/example
+  - packages/showcase
 
 scripts:
   analyze:

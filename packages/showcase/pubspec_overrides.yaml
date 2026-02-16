@@ -1,0 +1,4 @@
+# melos_managed_dependency_overrides: pin_code_fields
+dependency_overrides:
+  pin_code_fields:
+    path: ../pin_code_fields

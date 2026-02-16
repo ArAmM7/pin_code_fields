@@ -1,0 +1,17 @@
+name: pin_code_fields_showcase
+description: Web showcase for the pin_code_fields ecosystem
+publish_to: 'none'
+
+environment:
+  sdk: ^3.5.0
+  flutter: ">=3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  pin_code_fields:
+    path: ../pin_code_fields
+  web: ^1.1.0
+
+flutter:
+  uses-material-design: true
