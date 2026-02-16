@@ -1,72 +1,5 @@
 # Changelog
 
-## [9.0.0-dev.3+fork.1] - iOS Clipboard Hang Fix
-
-### Bug Fixes 🐛
-
-- **iOS App Hang fix**: All `Clipboard.getData` calls are now guarded with a 500 ms timeout so a stalled native clipboard never blocks the UI thread.
-- **Focus-triggered clipboard probe deferred**: `_checkClipboard()` is now dispatched via `addPostFrameCallback` instead of running synchronously inside the focus listener, preventing hangs on app-resume / biometric transitions.
-- **Long-press paste deferred**: Default context menu no longer triggers an eager clipboard read; clipboard data is read only after the user explicitly taps the Paste button.
-- **Centralised safe clipboard helper**: All clipboard reads go through `_safeClipboardRead()` which wraps the platform call in `try/catch` + `.timeout()`, failing silently on error or timeout.
-
----
-
-## [9.0.0-dev.3] - Metadata & Accessibility
-
-### Features ✨
-
-- **Accessibility (Semantics)**: Full screen reader support with `semanticLabel` parameter
-  - Announces field purpose (e.g., "6-digit PIN code field")
-  - Provides hints about remaining digits
-  - Masks values when obscured for privacy
-  - Exposes enabled/focused states
-
-### Documentation 📚
-
-- **README**: Updated with demo GIFs showcasing all features
-- **Screenshots**: Added static screenshots for pub.dev gallery
-- **Migration Guide**: Cleaned up migration resources (removed script references)
-
----
-
-## [9.0.0-dev.2] - Feature Enhancements
-
-### Features ✨
-
-- **`cursorAlignment`**: Position custom cursor widgets within cells (e.g., underscore at bottom)
-  ```dart
-  MaterialPinTheme(
-    cursorAlignment: Alignment.bottomCenter,
-    cursorWidget: myUnderscoreCursor,
-  )
-  ```
-- **`onClipboardFound`**: Callback when clipboard contains valid PIN-like content on focus
-- **`onTapOutside`**: Callback when user taps outside the field
-- **`errorText` & `errorBuilder`**: Custom error display below the PIN field
-- **`followingFillColor` & `followingBorderColor`**: Style for cells after the focused cell
-- **`completeFillColor`, `completeBorderColor` & `completeTextStyle`**: Style when all cells are filled
-
-### Bug Fixes 🐛
-
-- **Focus on complete**: Last cell now shows focused state when PIN is complete and field is focused
-- **Cursor alignment**: Fixed custom cursor positioning - removed internal `Center` widget that was overriding alignment
-- **Web input**: Fixed text input not working on web by adjusting invisible text field configuration
-- **Controller notifications**: Fixed `PinInputController` not notifying listeners on focus/text changes
-
-### Example App 📱
-
-- Added comprehensive use case demos (OTP verification, PIN setup, PIN login, payment confirmation, invite codes, app lock screen)
-- Added feature demos for all customization options:
-  - Quick Start: Basic usage, Controller demo
-  - Shapes & Themes: Shape gallery, Color customization, Shadows & elevation
-  - Animations: Entry animations, Custom cursor
-  - State Theming: All states demo, Error handling
-  - Customization: Headless builder, Hints, Obscure text, Separators, Text gradient
-  - Interactions: Clipboard detection, Form validation, Autofill & SMS
-- Added interactive **Playground** for real-time customization of all options
-
----
-
 ## [9.0.0] - Major Architecture Refactor
 
 ### Breaking Changes ⚠️
@@ -93,6 +26,39 @@ This is a complete rewrite with a new headless architecture. Migration required.
 - **Form Integration**: `PinInputFormField` for form validation
 - **SMS Autofill**: Full autofill support with `enableAutofill` and `autofillHints`
 - **Haptic Feedback**: Configurable haptic feedback types
+- **Accessibility (Semantics)**: Full screen reader support with `semanticLabel` parameter
+  - Announces field purpose (e.g., "6-digit PIN code field")
+  - Provides hints about remaining digits
+  - Masks values when obscured for privacy
+  - Exposes enabled/focused states
+- **`cursorAlignment`**: Position custom cursor widgets within cells (e.g., underscore at bottom)
+- **`onClipboardFound`**: Callback when clipboard contains valid PIN-like content on focus
+- **`onTapOutside`**: Callback when user taps outside the field
+- **`errorText` & `errorBuilder`**: Custom error display below the PIN field
+- **`followingFillColor` & `followingBorderColor`**: Style for cells after the focused cell
+- **`completeFillColor`, `completeBorderColor` & `completeTextStyle`**: Style when all cells are filled
+
+### Bug Fixes 🐛
+
+- **iOS App Hang fix**: All `Clipboard.getData` calls are now guarded with a 500 ms timeout so a stalled native clipboard never blocks the UI thread
+- **Focus-triggered clipboard probe deferred**: `_checkClipboard()` dispatched via `addPostFrameCallback` instead of running synchronously inside the focus listener
+- **Long-press paste deferred**: Default context menu no longer triggers an eager clipboard read; clipboard data is read only after the user explicitly taps Paste
+- **Centralised safe clipboard helper**: All clipboard reads go through `_safeClipboardRead()` with `try/catch` + `.timeout()`
+- **Focus on complete**: Last cell now shows focused state when PIN is complete and field is focused
+- **Cursor alignment**: Fixed custom cursor positioning - removed internal `Center` widget that was overriding alignment
+- **Web input**: Fixed text input not working on web by adjusting invisible text field configuration
+- **Controller notifications**: Fixed `PinInputController` not notifying listeners on focus/text changes
+
+### Example App 📱
+
+- Added comprehensive use case demos (OTP verification, PIN setup, PIN login, payment confirmation, invite codes, app lock screen)
+- Added feature demos for all customization options
+- Added interactive **Playground** for real-time customization of all options
+
+### Documentation 📚
+
+- Updated README with demo GIFs showcasing all features
+- Added static screenshots for pub.dev gallery
 
 ### Migration Guide
 
