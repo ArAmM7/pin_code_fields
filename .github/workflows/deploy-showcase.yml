@@ -5,8 +5,6 @@ on:
     branches: [main]
     paths:
       - 'packages/showcase/**'
-      - 'packages/pin_code_fields/lib/**'
-      - 'packages/pin_code_fields_liquid_glass/lib/**'
 
 permissions:
   contents: read
