@@ -1,5 +1,16 @@
 # Changelog
 
+## [9.0.0-dev.3+fork.1] - iOS Clipboard Hang Fix
+
+### Bug Fixes 🐛
+
+- **iOS App Hang fix**: All `Clipboard.getData` calls are now guarded with a 500 ms timeout so a stalled native clipboard never blocks the UI thread.
+- **Focus-triggered clipboard probe deferred**: `_checkClipboard()` is now dispatched via `addPostFrameCallback` instead of running synchronously inside the focus listener, preventing hangs on app-resume / biometric transitions.
+- **Long-press paste deferred**: Default context menu no longer triggers an eager clipboard read; clipboard data is read only after the user explicitly taps the Paste button.
+- **Centralised safe clipboard helper**: All clipboard reads go through `_safeClipboardRead()` which wraps the platform call in `try/catch` + `.timeout()`, failing silently on error or timeout.
+
+---
+
 ## [9.0.0-dev.3] - Metadata & Accessibility
 
 ### Features ✨
