@@ -68,18 +68,23 @@ class _EntryAnimationsDemoState extends State<EntryAnimationsDemo> {
                 style: TextStyle(fontWeight: FontWeight.w500)),
             const SizedBox(height: 16),
 
-            ...MaterialPinAnimation.values.map((anim) {
-              return RadioListTile<MaterialPinAnimation>(
-                title: Text(_animationName(anim)),
-                subtitle: Text(_animationDescription(anim)),
-                value: anim,
-                groupValue: _selectedAnimation,
-                onChanged: (value) {
-                  setState(() => _selectedAnimation = value!);
-                  _pinController.clear();
-                },
-              );
-            }),
+            RadioGroup<MaterialPinAnimation>(
+              groupValue: _selectedAnimation,
+              onChanged: (value) {
+                if (value == null) return;
+                setState(() => _selectedAnimation = value);
+                _pinController.clear();
+              },
+              child: Column(
+                children: MaterialPinAnimation.values.map((anim) {
+                  return RadioListTile<MaterialPinAnimation>(
+                    title: Text(_animationName(anim)),
+                    subtitle: Text(_animationDescription(anim)),
+                    value: anim,
+                  );
+                }).toList(),
+              ),
+            ),
           ],
         ),
       ),

@@ -40,7 +40,7 @@
 ///
 /// - **Blended** ([LiquidGlassPinTheme.blended]) - Cells that blend together
 ///   using LiquidGlassBlendGroup. Modern iOS 26 aesthetic.
-library pin_code_fields_liquid_glass;
+library;
 
 export 'src/liquid_glass_pin_field.dart';
 export 'src/liquid_glass_pin_form_field.dart';
