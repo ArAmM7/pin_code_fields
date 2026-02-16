@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -505,28 +504,113 @@ class _PinInputState extends State<PinInput>
     if (!_focusNode.hasFocus) {
       editableTextKey.currentState?.hideToolbar();
     } else {
-      // Check clipboard when focus is gained
-      _checkClipboard();
+      // Defer clipboard check to avoid running during the synchronous
+      // focus-change callback. This prevents blocking the UI thread when
+      // iOS delays clipboard access (e.g. after app-resume / biometric).
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && _focusNode.hasFocus) {
+          _checkClipboard();
+        }
+      });
     }
     if (mounted) setState(() {});
   }
 
+  // ------------------------------------------------------------------
+  // Safe clipboard access
+  // ------------------------------------------------------------------
+
+  /// Maximum time to wait for a native clipboard response before giving up.
+  /// On iOS the system clipboard prompt can stall the main thread; capping
+  /// the wait prevents Sentry-reported App Hangs.
+  static const _clipboardTimeout = Duration(milliseconds: 500);
+
+  /// Reads the clipboard with a timeout guard.
+  ///
+  /// Returns the plain-text content, or `null` if the read fails, times out,
+  /// or yields empty data. Never throws.
+  Future<String?> _safeClipboardRead() async {
+    try {
+      final clipboardData = await Clipboard.getData(Clipboard.kTextPlain)
+          .timeout(
+            _clipboardTimeout,
+            onTimeout: () => null,
+          );
+      final text = clipboardData?.text;
+      return (text != null && text.isNotEmpty) ? text : null;
+    } catch (_) {
+      // Clipboard access may fail on some platforms; silently ignore.
+      return null;
+    }
+  }
+
+  // ------------------------------------------------------------------
+  // Paste action (user-initiated from context menu)
+  // ------------------------------------------------------------------
+
+  Future<void> _handlePasteAction(EditableTextState editableTextState) async {
+    editableTextState.hideToolbar();
+
+    final clipboardText = await _safeClipboardRead();
+    if (clipboardText == null) return;
+
+    // Respect user-provided clipboard validation for paste acceptance.
+    if (widget.clipboardValidator != null &&
+        !widget.clipboardValidator!(clipboardText, widget.length)) {
+      return;
+    }
+
+    final limitedText = _getLimitedText(clipboardText);
+    if (limitedText.isEmpty) return;
+
+    if (!mounted) return;
+    _textController.value = TextEditingValue(
+      text: limitedText,
+      selection: TextSelection.collapsed(offset: limitedText.length),
+    );
+  }
+
+  Widget _buildDeferredPasteMenu(
+    BuildContext context,
+    EditableTextState editableTextState,
+  ) {
+    return AdaptiveTextSelectionToolbar.buttonItems(
+      anchors: editableTextState.contextMenuAnchors,
+      buttonItems: [
+        ContextMenuButtonItem(
+          type: ContextMenuButtonType.paste,
+          onPressed: () => _handlePasteAction(editableTextState),
+        ),
+      ],
+    );
+  }
+
+  EditableTextContextMenuBuilder? _resolveContextMenuBuilder() {
+    if (!selectionEnabled) return null;
+    if (identical(widget.contextMenuBuilder, defaultPinContextMenuBuilder)) {
+      // Avoid eager clipboard reads in default long-press flow on iOS.
+      return _buildDeferredPasteMenu;
+    }
+    return widget.contextMenuBuilder;
+  }
+
+  // ------------------------------------------------------------------
+  // Clipboard probing (auto-detect on focus)
+  // ------------------------------------------------------------------
+
   /// Checks the clipboard for valid PIN content and triggers callback if found.
+  ///
+  /// Called after focus is gained. The read is guarded by [_safeClipboardRead]
+  /// so a slow or blocked clipboard never hangs the UI.
   Future<void> _checkClipboard() async {
     if (widget.onClipboardFound == null) return;
 
-    try {
-      final clipboardData = await Clipboard.getData(Clipboard.kTextPlain);
-      final text = clipboardData?.text;
+    final text = await _safeClipboardRead();
+    if (text == null) return;
 
-      if (text == null || text.isEmpty) return;
-
-      final isValid = _validateClipboardContent(text);
-      if (isValid && mounted) {
-        widget.onClipboardFound?.call(text);
-      }
-    } catch (_) {
-      // Clipboard access may fail on some platforms, silently ignore
+    final isValid = _validateClipboardContent(text);
+    if (isValid && mounted) {
+      widget.onClipboardFound?.call(text);
     }
   }
 
@@ -753,8 +837,7 @@ class _PinInputState extends State<PinInput>
                     readOnly: widget.readOnly,
                     selectionEnabled: selectionEnabled,
                     selectionControls: selectionControls,
-                    contextMenuBuilder:
-                        selectionEnabled ? widget.contextMenuBuilder : null,
+                    contextMenuBuilder: _resolveContextMenuBuilder(),
                     keyboardType: widget.keyboardType,
                     inputFormatters: widget.inputFormatters,
                     textCapitalization: widget.textCapitalization,
