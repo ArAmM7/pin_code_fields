@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:pin_code_fields_liquid_glass/pin_code_fields_liquid_glass.dart';
 
 import '../components/code_block.dart';
 import '../components/section_title.dart';
 import '../layout/responsive.dart';
 import '../layout/section_wrapper.dart';
 
-/// Liquid Glass section — visual showcase (liquid glass requires Impeller, not web).
+/// Liquid Glass section with live LiquidGlassPinField demos.
 class LiquidGlassSection extends StatelessWidget {
   const LiquidGlassSection({super.key, this.sectionKey});
 
@@ -24,16 +25,6 @@ class LiquidGlassSection extends StatelessWidget {
           const SectionTitle(
             title: 'Liquid Glass',
             subtitle: 'iOS 26 aesthetic for Flutter',
-          ),
-          Text(
-            'Requires Impeller engine — available on iOS, Android, macOS',
-            style: TextStyle(
-              color: Theme.of(context)
-                  .colorScheme
-                  .onSurface
-                  .withValues(alpha: 0.5),
-              fontSize: 13,
-            ),
           ),
           const SizedBox(height: 40),
           ResponsiveGrid(
@@ -96,213 +87,139 @@ class _GlassStyleCard extends StatefulWidget {
 }
 
 class _GlassStyleCardState extends State<_GlassStyleCard> {
+  final _controller = PinInputController();
   bool _hovered = false;
 
   @override
-  Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
+  LiquidGlassPinTheme get _theme {
+    switch (widget.style) {
+      case _GlassStyle.separate:
+        return LiquidGlassPinTheme.separate(
+          blur: 10,
+          borderRadius: 12,
+          cellSize: const Size(44, 56),
+        );
+      case _GlassStyle.unified:
+        return LiquidGlassPinTheme.unified(
+          blur: 10,
+          containerBorderRadius: 16,
+          cellSize: const Size(44, 56),
+        );
+      case _GlassStyle.blended:
+        return LiquidGlassPinTheme.blended(
+          blur: 10,
+          borderRadius: 12,
+          cellSize: const Size(44, 56),
+        );
+    }
+  }
+
+  List<Color> get _gradientColors {
+    switch (widget.style) {
+      case _GlassStyle.separate:
+        return const [Color(0xFF6366F1), Color(0xFF8B5CF6), Color(0xFFA78BFA)];
+      case _GlassStyle.unified:
+        return const [Color(0xFFEC4899), Color(0xFFF472B6), Color(0xFFFDA4AF)];
+      case _GlassStyle.blended:
+        return const [Color(0xFF06B6D4), Color(0xFF8B5CF6), Color(0xFFEC4899)];
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return MouseRegion(
       onEnter: (_) => setState(() => _hovered = true),
       onExit: (_) => setState(() => _hovered = false),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.all(24),
+        clipBehavior: Clip.antiAlias,
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: isDark
-                ? [
-                    const Color(0xFF1A1A2E),
-                    const Color(0xFF15152A),
-                  ]
-                : [
-                    Colors.white,
-                    const Color(0xFFF8F0FF),
-                  ],
-          ),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: _hovered
-                ? const Color(0xFFEC4899).withValues(alpha: 0.5)
-                : (isDark
-                    ? const Color(0xFF2A2A3E)
-                    : const Color(0xFFE5E7EB)),
-          ),
           boxShadow: _hovered
               ? [
                   BoxShadow(
-                    color: const Color(0xFFEC4899).withValues(alpha: 0.1),
+                    color: _gradientColors[0].withValues(alpha: 0.3),
                     blurRadius: 20,
                     spreadRadius: 2,
                   ),
                 ]
               : null,
         ),
-        child: Column(
+        child: Stack(
           children: [
-            // Visual representation of glass cells
-            _GlassVisual(style: widget.style, isDark: isDark),
-            const SizedBox(height: 20),
-            Text(
-              widget.title,
-              style: Theme.of(context).textTheme.titleLarge,
+            // Vibrant gradient background
+            Positioned.fill(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: _gradientColors,
+                  ),
+                ),
+              ),
             ),
-            const SizedBox(height: 6),
-            Text(
-              widget.description,
-              style: Theme.of(context).textTheme.bodySmall,
-              textAlign: TextAlign.center,
+            // Decorative circles for visual interest
+            Positioned(
+              top: -20,
+              right: -20,
+              child: Container(
+                width: 100,
+                height: 100,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white.withValues(alpha: 0.15),
+                ),
+              ),
+            ),
+            Positioned(
+              bottom: -30,
+              left: -10,
+              child: Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white.withValues(alpha: 0.1),
+                ),
+              ),
+            ),
+            // Content
+            Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                children: [
+                  LiquidGlassPinField(
+                    length: 4,
+                    pinController: _controller,
+                    theme: _theme,
+                    enableHapticFeedback: false,
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    widget.title,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          color: Colors.white,
+                        ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    widget.description,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Colors.white70,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-/// Visual representation of glass styles (no actual glass rendering on web).
-class _GlassVisual extends StatelessWidget {
-  const _GlassVisual({required this.style, required this.isDark});
-
-  final _GlassStyle style;
-  final bool isDark;
-
-  @override
-  Widget build(BuildContext context) {
-    final glassColor = isDark
-        ? Colors.white.withValues(alpha: 0.1)
-        : Colors.white.withValues(alpha: 0.6);
-    final borderColor = isDark
-        ? Colors.white.withValues(alpha: 0.15)
-        : Colors.white.withValues(alpha: 0.4);
-
-    return Container(
-      height: 72,
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: switch (style) {
-        _GlassStyle.separate => _buildSeparate(glassColor, borderColor),
-        _GlassStyle.unified => _buildUnified(glassColor, borderColor),
-        _GlassStyle.blended => _buildBlended(glassColor, borderColor),
-      },
-    );
-  }
-
-  Widget _buildSeparate(Color glass, Color border) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(
-        4,
-        (i) => Container(
-          width: 44,
-          height: 56,
-          margin: const EdgeInsets.symmetric(horizontal: 4),
-          decoration: BoxDecoration(
-            color: glass,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: border),
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xFFEC4899).withValues(alpha: 0.08),
-                blurRadius: 8,
-              ),
-            ],
-          ),
-          child: Center(
-            child: i < 2
-                ? Text(
-                    '${i + 1}',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: isDark ? Colors.white : const Color(0xFF1A1A2E),
-                    ),
-                  )
-                : null,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildUnified(Color glass, Color border) {
-    return Container(
-      decoration: BoxDecoration(
-        color: glass,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: border),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 4),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: List.generate(
-          4,
-          (i) => Container(
-            width: 44,
-            height: 56,
-            decoration: BoxDecoration(
-              border: i < 3
-                  ? Border(
-                      right: BorderSide(
-                        color: border,
-                        width: 0.5,
-                      ),
-                    )
-                  : null,
-            ),
-            child: Center(
-              child: i < 2
-                  ? Text(
-                      '${i + 1}',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        color:
-                            isDark ? Colors.white : const Color(0xFF1A1A2E),
-                      ),
-                    )
-                  : null,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBlended(Color glass, Color border) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(
-        4,
-        (i) => Container(
-          width: 44,
-          height: 56,
-          margin: const EdgeInsets.symmetric(horizontal: 1),
-          decoration: BoxDecoration(
-            color: glass,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: border.withValues(alpha: 0.08)),
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xFFEC4899).withValues(alpha: 0.05),
-                blurRadius: 12,
-                spreadRadius: 4,
-              ),
-            ],
-          ),
-          child: Center(
-            child: i < 2
-                ? Text(
-                    '${i + 1}',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: isDark ? Colors.white : const Color(0xFF1A1A2E),
-                    ),
-                  )
-                : null,
-          ),
         ),
       ),
     );

@@ -11,6 +11,8 @@ dependencies:
     sdk: flutter
   pin_code_fields:
     path: ../pin_code_fields
+  pin_code_fields_liquid_glass:
+    path: ../pin_code_fields_liquid_glass
   web: ^1.1.0
 
 flutter:
