@@ -96,7 +96,7 @@ class MaterialPinField extends StatefulWidget {
   /// Theme configuration for the PIN field.
   ///
   /// If null, the theme will be resolved from [ThemeData.extensions] using
-  /// [MaterialPinThemeExtension], or fall back to [MaterialPinTheme.defaults].
+  /// [MaterialPinThemeExtension], or fall back to `const MaterialPinTheme()`.
   final MaterialPinTheme? theme;
 
   /// Controller for the PIN input.
