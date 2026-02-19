@@ -1,5 +1,23 @@
 # Changelog
 
+## [9.1.0] - Theme Extension Support
+
+### Features ✨
+
+- **Theme Extension**: Added `MaterialPinThemeExtension` for embedding `MaterialPinTheme` in `ThemeData`
+  - Register a default PIN theme at the app level using `ThemeData.extensions`
+  - Access the theme anywhere with `Theme.of(context).materialPinTheme`
+  - Supports light/dark theme configurations
+  - Widgets without explicit themes automatically use the global theme
+  - Added example demo showing app-wide theming usage
+
+### Documentation 📚
+
+- Updated README with "App-Wide Theming" section
+- Added code examples for theme extension setup and usage
+
+---
+
 ## [9.0.0] - Major Architecture Refactor
 
 ### Breaking Changes ⚠️

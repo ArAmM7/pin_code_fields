@@ -48,6 +48,7 @@ export 'src/core/form/pin_input_form_field.dart';
 // Material exports
 export 'src/material/material_pin_field.dart';
 export 'src/material/theme/material_pin_theme.dart';
+export 'src/material/theme/material_pin_theme_extension.dart';
 export 'src/material/cells/material_pin_cell.dart'
     show MaterialPinCell, PinCellStateStyle;
 export 'src/material/cells/material_cell_content.dart';
