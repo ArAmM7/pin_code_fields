@@ -99,19 +99,6 @@ void main() {
 
       expect(extension1.hashCode, equals(extension2.hashCode));
     });
-
-    test('different themes have different hashCodes', () {
-      const extension1 = MaterialPinThemeExtension(
-        theme: MaterialPinTheme(shape: MaterialPinShape.outlined),
-      );
-      const extension2 = MaterialPinThemeExtension(
-        theme: MaterialPinTheme(shape: MaterialPinShape.filled),
-      );
-
-      // HashCodes may collide, but generally should be different
-      // This is more of a sanity check
-      expect(extension1.hashCode, isNot(equals(extension2.hashCode)));
-    });
   });
 
   group('MaterialPinThemeDataExtension', () {
@@ -267,6 +254,10 @@ void main() {
 
       // Verify cells are rendered with the custom theme
       expect(find.byType(MaterialPinCell), findsNWidgets(4));
+
+      // Verify the cell size reflects the global theme from ThemeData
+      final cellSize = tester.getSize(find.byType(MaterialPinCell).first);
+      expect(cellSize, equals(customTheme.cellSize));
     });
 
     testWidgets('MaterialPinField explicit theme overrides ThemeData',
@@ -299,6 +290,10 @@ void main() {
 
       expect(find.byType(MaterialPinField), findsOneWidget);
       expect(find.byType(MaterialPinCell), findsNWidgets(4));
+
+      // Verify that the explicit local theme overrides the ThemeData extension
+      final cellSize = tester.getSize(find.byType(MaterialPinCell).first);
+      expect(cellSize, equals(localTheme.cellSize));
     });
   });
 }
