@@ -238,34 +238,34 @@ void main() {
   });
 
   group('Integration with MaterialPinField', () {
-    testWidgets('MaterialPinField can use theme from ThemeData',
+    testWidgets('MaterialPinField automatically uses theme from ThemeData',
         (tester) async {
-      const theme = MaterialPinTheme(
+      const customTheme = MaterialPinTheme(
         shape: MaterialPinShape.outlined,
-        cellSize: Size(56, 64),
-        spacing: 12,
+        cellSize: Size(100, 100),
+        spacing: 20,
       );
 
       await tester.pumpWidget(
         MaterialApp(
           theme: ThemeData(
             extensions: [
-              const MaterialPinThemeExtension(theme: theme),
+              const MaterialPinThemeExtension(theme: customTheme),
             ],
           ),
           home: const Scaffold(
             body: MaterialPinField(
               length: 4,
-              // No explicit theme - should use ThemeData extension
+              // No explicit theme - should automatically use ThemeData extension
             ),
           ),
         ),
       );
 
-      // MaterialPinField should render with the theme
+      // MaterialPinField should render with the theme from ThemeData
       expect(find.byType(MaterialPinField), findsOneWidget);
 
-      // Verify cells are rendered
+      // Verify cells are rendered with the custom theme
       expect(find.byType(MaterialPinCell), findsNWidgets(4));
     });
 

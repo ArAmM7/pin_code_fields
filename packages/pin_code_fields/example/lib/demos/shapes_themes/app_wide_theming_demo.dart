@@ -18,7 +18,7 @@ class AppWideThemingDemo extends StatelessWidget {
             title: 'Theme Extension',
             description:
                 'This demo uses a MaterialPinThemeExtension registered in the app\'s ThemeData. '
-                'The theme is automatically applied to all MaterialPinField widgets that don\'t specify their own theme.',
+                'MaterialPinField automatically uses the global theme when no explicit theme is provided.',
             icon: Icons.palette,
           ),
           const SizedBox(height: 24),
@@ -29,8 +29,9 @@ class AppWideThemingDemo extends StatelessWidget {
           // Example 1: Using the global theme from ThemeData
           _ExampleCard(
             title: 'Global Theme',
-            description: 'This field uses the theme from ThemeData',
-            child: _PinFieldFromTheme(context),
+            description:
+                'This field automatically uses the theme from ThemeData (no explicit theme parameter)',
+            child: const _PinFieldFromTheme(),
           ),
 
           const SizedBox(height: 24),
@@ -111,23 +112,32 @@ class AppWideThemingDemo extends StatelessWidget {
                 ),
                 Text(''),
                 Text(
-                  '// In your widget:',
+                  '// In your widget (automatic theme usage):',
                   style: TextStyle(color: Colors.grey),
-                ),
-                Text(
-                  'final pinTheme = Theme.of(context).materialPinTheme;',
-                  style: TextStyle(fontFamily: 'monospace'),
                 ),
                 Text(
                   'MaterialPinField(',
                   style: TextStyle(fontFamily: 'monospace'),
                 ),
                 Text(
-                  '  theme: pinTheme ?? const MaterialPinTheme(),',
+                  '  length: 6,',
+                  style: TextStyle(fontFamily: 'monospace'),
+                ),
+                Text(
+                  '  // No theme parameter - uses ThemeData automatically',
                   style: TextStyle(fontFamily: 'monospace'),
                 ),
                 Text(
                   ')',
+                  style: TextStyle(fontFamily: 'monospace'),
+                ),
+                Text(''),
+                Text(
+                  '// Or explicitly access the theme:',
+                  style: TextStyle(color: Colors.grey),
+                ),
+                Text(
+                  'final pinTheme = Theme.of(context).materialPinTheme;',
                   style: TextStyle(fontFamily: 'monospace'),
                 ),
               ],
@@ -140,18 +150,14 @@ class AppWideThemingDemo extends StatelessWidget {
 }
 
 class _PinFieldFromTheme extends StatelessWidget {
-  const _PinFieldFromTheme(this.context);
-
-  final BuildContext context;
+  const _PinFieldFromTheme();
 
   @override
   Widget build(BuildContext context) {
-    // Get the theme from ThemeData
-    final pinTheme = Theme.of(context).materialPinTheme;
-
+    // This field automatically uses the theme from ThemeData
+    // because no explicit theme parameter is provided
     return MaterialPinField(
       length: 6,
-      theme: pinTheme ?? const MaterialPinTheme(),
       onCompleted: (value) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('PIN: $value')),

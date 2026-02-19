@@ -8,7 +8,7 @@
   - Register a default PIN theme at the app level using `ThemeData.extensions`
   - Access the theme anywhere with `Theme.of(context).materialPinTheme`
   - Supports light/dark theme configurations
-  - Widgets without explicit themes automatically use the global theme
+  - `MaterialPinField` automatically uses the global theme when no explicit `theme` is provided
   - Added example demo showing app-wide theming usage
 
 ### Documentation 📚

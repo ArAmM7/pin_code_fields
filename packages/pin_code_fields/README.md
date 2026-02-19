@@ -210,7 +210,20 @@ MaterialApp(
 )
 ```
 
-### Accessing the Theme
+### Automatic Theme Usage
+
+When you register a `MaterialPinThemeExtension` in your `ThemeData`, `MaterialPinField` will automatically use it when no explicit `theme` parameter is provided:
+
+```dart
+MaterialPinField(
+  length: 6,
+  // No theme parameter - automatically uses ThemeData
+)
+```
+
+### Accessing the Theme Manually
+
+If you need to access the theme for custom logic or to override specific properties:
 
 ```dart
 // Using the convenience extension
