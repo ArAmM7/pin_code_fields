@@ -52,7 +52,7 @@ A highly customizable Flutter package for PIN code and OTP input fields with bea
 - **Error Handling**: Built-in shake animation with programmatic control
 - **Autofill Support**: SMS OTP autofill for iOS and Android
 - **Haptic Feedback**: Configurable haptic feedback on input
-- **Form Integration**: Works seamlessly with Flutter's Form widget
+- **Form Integration**: `MaterialPinFormField` for Material + validation, `PinInputFormField` for custom UIs
 - **Paste Support**: Long-press to paste from clipboard
 - **Cursor Support**: Animated blinking cursor
 - **Text Gradient**: Apply beautiful gradients to PIN text
@@ -350,11 +350,42 @@ MaterialPinField(
 
 ### Form Integration
 
+Two form field widgets are available depending on your needs:
+
+| Widget | Use when |
+|--------|----------|
+| `MaterialPinFormField` | You want Material styling + form validation out of the box |
+| `PinInputFormField` | You need a fully custom UI with your own builder |
+
+#### MaterialPinFormField (recommended)
+
+Material Design styling with built-in form validation, error shake animation, and error text display:
+
+```dart
+Form(
+  child: MaterialPinFormField(
+    length: 6,
+    theme: MaterialPinTheme(shape: MaterialPinShape.outlined),
+    validator: (value) {
+      if (value == null || value.length < 6) {
+        return 'Please enter all 6 digits';
+      }
+      return null;
+    },
+    onSaved: (value) => print('Saved: $value'),
+  ),
+)
+```
+
+#### PinInputFormField (headless)
+
+For fully custom UIs — you provide the builder, the form handles validation:
+
 ```dart
 Form(
   child: PinInputFormField(
     length: 6,
-    builder: (context, cells) => /* your UI */,
+    pinBuilder: (context, cells) => /* your custom UI */,
     validator: (value) {
       if (value == null || value.length < 6) {
         return 'Please enter all 6 digits';
