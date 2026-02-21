@@ -46,6 +46,7 @@ export 'src/core/haptics.dart';
 export 'src/core/form/pin_input_form_field.dart';
 
 // Material exports
+export 'src/material/form/material_pin_form_field.dart';
 export 'src/material/material_pin_field.dart';
 export 'src/material/theme/material_pin_theme.dart';
 export 'src/material/theme/material_pin_theme_extension.dart';
