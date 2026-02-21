@@ -14,6 +14,7 @@ import 'demos/quick_start/controller_demo.dart';
 import 'demos/shapes_themes/shape_gallery_demo.dart';
 import 'demos/shapes_themes/color_customization_demo.dart';
 import 'demos/shapes_themes/shadows_demo.dart';
+import 'demos/shapes_themes/app_wide_theming_demo.dart';
 import 'demos/animations/entry_animations_demo.dart';
 import 'demos/animations/custom_cursor_demo.dart';
 import 'demos/animations/creative_cell_animations_demo.dart';
@@ -239,6 +240,10 @@ class _FeaturesTab extends StatelessWidget {
             _FeatureItem(
               title: 'Shadows & Elevation',
               page: const ShadowsDemo(),
+            ),
+            _FeatureItem(
+              title: 'App-Wide Theming',
+              page: const AppWideThemingDemo(),
             ),
           ],
         ),

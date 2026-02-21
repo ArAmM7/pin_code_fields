@@ -45,6 +45,7 @@ A highly customizable Flutter package for PIN code and OTP input fields with bea
 
 - **Headless Core**: Build completely custom PIN UIs with full control
 - **Material Design Ready**: Beautiful, ready-to-use Material Design implementation
+- **App-Wide Theming**: Set default PIN themes in `ThemeData` for consistent styling
 - **Unified Controller**: Single `PinInputController` for text, focus, and error management
 - **Multiple Shapes**: Outlined, filled, underlined, and circle styles
 - **Rich Animations**: Scale, fade, slide animations for text entry
@@ -172,6 +173,102 @@ MaterialPinTheme(shape: MaterialPinShape.underlined)
 
 // Circle
 MaterialPinTheme(shape: MaterialPinShape.circle)
+```
+
+## App-Wide Theming 🎨
+
+Register a default `MaterialPinTheme` in your app's `ThemeData` to use consistent PIN styling across your entire app:
+
+### Setup
+
+```dart
+MaterialApp(
+  theme: ThemeData(
+    // ... other theme properties
+    extensions: const [
+      MaterialPinThemeExtension(
+        theme: MaterialPinTheme(
+          shape: MaterialPinShape.outlined,
+          cellSize: Size(56, 64),
+          spacing: 12,
+        ),
+      ),
+    ],
+  ),
+  darkTheme: ThemeData(
+    // ... other dark theme properties
+    extensions: const [
+      MaterialPinThemeExtension(
+        theme: MaterialPinTheme(
+          shape: MaterialPinShape.outlined,
+          cellSize: Size(56, 64),
+          spacing: 12,
+        ),
+      ),
+    ],
+  ),
+)
+```
+
+### Automatic Theme Usage
+
+When you register a `MaterialPinThemeExtension` in your `ThemeData`, `MaterialPinField` will automatically use it when no explicit `theme` parameter is provided:
+
+```dart
+MaterialPinField(
+  length: 6,
+  // No theme parameter - automatically uses ThemeData
+)
+```
+
+### Accessing the Theme Manually
+
+If you need to access the theme for custom logic or to override specific properties:
+
+```dart
+// Using the convenience extension
+final pinTheme = Theme.of(context).materialPinTheme;
+
+// Using the standard extension method
+final pinTheme = Theme.of(context).extension<MaterialPinThemeExtension>()?.theme;
+
+MaterialPinField(
+  length: 6,
+  theme: pinTheme ?? const MaterialPinTheme(),
+)
+```
+
+### Light & Dark Themes
+
+You can provide different themes for light and dark modes:
+
+```dart
+MaterialApp(
+  theme: ThemeData(
+    brightness: Brightness.light,
+    extensions: [
+      MaterialPinThemeExtension(
+        theme: MaterialPinTheme(
+          shape: MaterialPinShape.outlined,
+          borderColor: Colors.grey,
+          focusedBorderColor: Colors.blue,
+        ),
+      ),
+    ],
+  ),
+  darkTheme: ThemeData(
+    brightness: Brightness.dark,
+    extensions: [
+      MaterialPinThemeExtension(
+        theme: MaterialPinTheme(
+          shape: MaterialPinShape.outlined,
+          borderColor: Colors.grey.shade700,
+          focusedBorderColor: Colors.blue.shade300,
+        ),
+      ),
+    ],
+  ),
+)
 ```
 
 ## Customization Options ⚙️

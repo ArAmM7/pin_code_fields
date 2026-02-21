@@ -8,6 +8,7 @@ import '../core/pin_input_controller.dart';
 import 'animations/error_shake.dart';
 import 'layout/material_pin_row.dart';
 import 'theme/material_pin_theme.dart';
+import 'theme/material_pin_theme_extension.dart';
 
 /// A ready-to-use Material Design PIN field.
 ///
@@ -30,7 +31,7 @@ class MaterialPinField extends StatefulWidget {
   const MaterialPinField({
     super.key,
     required this.length,
-    this.theme = const MaterialPinTheme(),
+    this.theme,
     // Controller
     this.pinController,
     this.initialValue,
@@ -93,7 +94,10 @@ class MaterialPinField extends StatefulWidget {
   final int length;
 
   /// Theme configuration for the PIN field.
-  final MaterialPinTheme theme;
+  ///
+  /// If null, the theme will be resolved from [ThemeData.extensions] using
+  /// [MaterialPinThemeExtension], or fall back to `const MaterialPinTheme()`.
+  final MaterialPinTheme? theme;
 
   /// Controller for the PIN input.
   ///
@@ -377,7 +381,10 @@ class _MaterialPinFieldState extends State<MaterialPinField>
 
   @override
   Widget build(BuildContext context) {
-    final resolvedTheme = widget.theme.resolve(context);
+    final theme = widget.theme ??
+        Theme.of(context).materialPinTheme ??
+        const MaterialPinTheme();
+    final resolvedTheme = theme.resolve(context);
     final hasError = effectiveController.hasError;
     final showError =
         hasError && (widget.errorText != null || widget.errorBuilder != null);
