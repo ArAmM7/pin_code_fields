@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Define the global PIN theme that will be used across the app
+    // Define separate light and dark PIN themes
     const lightPinTheme = MaterialPinTheme(
       shape: MaterialPinShape.outlined,
       cellSize: Size(56, 64),
@@ -20,6 +20,8 @@ class MyApp extends StatelessWidget {
       borderRadius: BorderRadius.all(Radius.circular(12)),
       borderWidth: 1.5,
       focusedBorderWidth: 2.5,
+      borderColor: Colors.grey,
+      focusedBorderColor: Colors.indigo,
     );
 
     const darkPinTheme = MaterialPinTheme(
@@ -29,6 +31,8 @@ class MyApp extends StatelessWidget {
       borderRadius: BorderRadius.all(Radius.circular(12)),
       borderWidth: 1.5,
       focusedBorderWidth: 2.5,
+      borderColor: Colors.grey,
+      focusedBorderColor: Colors.indigoAccent,
     );
 
     return MaterialApp(

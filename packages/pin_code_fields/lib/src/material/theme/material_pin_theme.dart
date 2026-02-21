@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 /// Shape variants for Material PIN cells.
@@ -330,6 +331,116 @@ class MaterialPinTheme {
 
   /// Whether to enable shake animation on error.
   final bool enableErrorShake;
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is MaterialPinTheme &&
+        other.shape == shape &&
+        other.cellSize == cellSize &&
+        other.spacing == spacing &&
+        other.borderRadius == borderRadius &&
+        other.borderWidth == borderWidth &&
+        other.focusedBorderWidth == focusedBorderWidth &&
+        other.fillColor == fillColor &&
+        other.focusedFillColor == focusedFillColor &&
+        other.filledFillColor == filledFillColor &&
+        other.borderColor == borderColor &&
+        other.focusedBorderColor == focusedBorderColor &&
+        other.filledBorderColor == filledBorderColor &&
+        other.followingFillColor == followingFillColor &&
+        other.followingBorderColor == followingBorderColor &&
+        other.completeFillColor == completeFillColor &&
+        other.completeBorderColor == completeBorderColor &&
+        other.completeTextStyle == completeTextStyle &&
+        other.errorColor == errorColor &&
+        other.errorFillColor == errorFillColor &&
+        other.errorBorderColor == errorBorderColor &&
+        other.errorBorderWidth == errorBorderWidth &&
+        other.errorTextStyle == errorTextStyle &&
+        listEquals(other.errorBoxShadows, errorBoxShadows) &&
+        other.disabledColor == disabledColor &&
+        other.disabledFillColor == disabledFillColor &&
+        other.disabledBorderColor == disabledBorderColor &&
+        other.disabledTextStyle == disabledTextStyle &&
+        other.textStyle == textStyle &&
+        other.textGradient == textGradient &&
+        other.obscuringCharacter == obscuringCharacter &&
+        other.hintCharacter == hintCharacter &&
+        other.hintStyle == hintStyle &&
+        other.cursorColor == cursorColor &&
+        other.cursorWidth == cursorWidth &&
+        other.cursorHeight == cursorHeight &&
+        other.showCursor == showCursor &&
+        other.animateCursor == animateCursor &&
+        other.cursorBlinkDuration == cursorBlinkDuration &&
+        other.cursorWidget == cursorWidget &&
+        other.cursorAlignment == cursorAlignment &&
+        other.elevation == elevation &&
+        other.focusedElevation == focusedElevation &&
+        listEquals(other.boxShadows, boxShadows) &&
+        listEquals(other.focusedBoxShadows, focusedBoxShadows) &&
+        other.entryAnimation == entryAnimation &&
+        other.customEntryAnimationBuilder == customEntryAnimationBuilder &&
+        other.animationDuration == animationDuration &&
+        other.animationCurve == animationCurve &&
+        other.errorAnimationDuration == errorAnimationDuration &&
+        other.enableErrorShake == enableErrorShake;
+  }
+
+  @override
+  int get hashCode => Object.hashAll([
+        shape,
+        cellSize,
+        spacing,
+        borderRadius,
+        borderWidth,
+        focusedBorderWidth,
+        fillColor,
+        focusedFillColor,
+        filledFillColor,
+        borderColor,
+        focusedBorderColor,
+        filledBorderColor,
+        followingFillColor,
+        followingBorderColor,
+        completeFillColor,
+        completeBorderColor,
+        completeTextStyle,
+        errorColor,
+        errorFillColor,
+        errorBorderColor,
+        errorBorderWidth,
+        errorTextStyle,
+        errorBoxShadows,
+        disabledColor,
+        disabledFillColor,
+        disabledBorderColor,
+        disabledTextStyle,
+        textStyle,
+        textGradient,
+        obscuringCharacter,
+        hintCharacter,
+        hintStyle,
+        cursorColor,
+        cursorWidth,
+        cursorHeight,
+        showCursor,
+        animateCursor,
+        cursorBlinkDuration,
+        cursorWidget,
+        cursorAlignment,
+        elevation,
+        focusedElevation,
+        boxShadows,
+        focusedBoxShadows,
+        entryAnimation,
+        customEntryAnimationBuilder,
+        animationDuration,
+        animationCurve,
+        errorAnimationDuration,
+        enableErrorShake,
+      ]);
 
   /// Creates a copy of this theme with the given fields replaced.
   MaterialPinTheme copyWith({
