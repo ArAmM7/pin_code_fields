@@ -1,6 +1,6 @@
 # Changelog
 
-## [9.1.0] - Theme Extension Support
+## [9.1.0] - Theme Extension & Material Form Field
 
 ### Features ✨
 
@@ -10,6 +10,15 @@
   - Supports light/dark theme configurations
   - `MaterialPinField` automatically uses the global theme when no explicit `theme` is provided
   - Added example demo showing app-wide theming usage
+- **MaterialPinFormField**: New Material Design form field with built-in `Form` validation
+  - Combines `MaterialPinField` styling with `FormField` capabilities (`validator`, `onSaved`, `autovalidateMode`)
+  - Dual error states: controller errors trigger shake animation, form validation shows error text below the field
+  - Theme resolution from widget prop, `ThemeData` extension, or default
+  - `reset()` clears both text and controller error state
+
+### Bug Fixes 🐛
+
+- **PinInputFormField**: Added missing parameters that exist in `PinInput` — `onClipboardFound`, `clipboardValidator`, `onLongPress`, `onTapOutside`, `mouseCursor`, `semanticLabel`
 
 ### Documentation 📚
 
