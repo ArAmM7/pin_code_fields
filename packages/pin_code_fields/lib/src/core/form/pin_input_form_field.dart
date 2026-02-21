@@ -73,18 +73,27 @@ class PinInputFormField extends FormField<String> {
     this.enablePaste = true,
     this.selectionControls,
     this.contextMenuBuilder,
+    // Clipboard
+    this.onClipboardFound,
+    this.clipboardValidator,
     // Callbacks
     this.onChanged,
     this.onCompleted,
     this.onSubmitted,
     this.onEditingComplete,
     this.onTap,
+    this.onLongPress,
+    this.onTapOutside,
+    // Cursor
+    this.mouseCursor,
     // Keyboard
     this.keyboardAppearance,
     this.scrollPadding = const EdgeInsets.all(20),
     // Autofill
     this.enableAutofill = false,
     this.autofillContextAction = AutofillContextAction.commit,
+    // Accessibility
+    this.semanticLabel,
     // Form field
     super.validator,
     super.onSaved,
@@ -126,6 +135,8 @@ class PinInputFormField extends FormField<String> {
                   enablePaste: widget.enablePaste,
                   selectionControls: widget.selectionControls,
                   contextMenuBuilder: widget.contextMenuBuilder,
+                  onClipboardFound: widget.onClipboardFound,
+                  clipboardValidator: widget.clipboardValidator,
                   onChanged: (value) {
                     field.didChange(value);
                     widget.onChanged?.call(value);
@@ -134,10 +145,14 @@ class PinInputFormField extends FormField<String> {
                   onSubmitted: widget.onSubmitted,
                   onEditingComplete: widget.onEditingComplete,
                   onTap: widget.onTap,
+                  onLongPress: widget.onLongPress,
+                  onTapOutside: widget.onTapOutside,
+                  mouseCursor: widget.mouseCursor,
                   keyboardAppearance: widget.keyboardAppearance,
                   scrollPadding: widget.scrollPadding,
                   enableAutofill: widget.enableAutofill,
                   autofillContextAction: widget.autofillContextAction,
+                  semanticLabel: widget.semanticLabel,
                 ),
                 if (field.hasError) ...[
                   SizedBox(height: widget.errorTextSpace),
@@ -227,6 +242,16 @@ class PinInputFormField extends FormField<String> {
   /// Builder for the context menu (paste functionality).
   final EditableTextContextMenuBuilder? contextMenuBuilder;
 
+  /// Called when the clipboard contains valid PIN-like content on focus.
+  ///
+  /// See [PinInput.onClipboardFound] for more details.
+  final ValueChanged<String>? onClipboardFound;
+
+  /// Custom validator for clipboard content.
+  ///
+  /// See [PinInput.clipboardValidator] for more details.
+  final bool Function(String text, int length)? clipboardValidator;
+
   /// Called when the text changes.
   final ValueChanged<String>? onChanged;
 
@@ -242,6 +267,19 @@ class PinInputFormField extends FormField<String> {
   /// Called when the widget is tapped.
   final VoidCallback? onTap;
 
+  /// Called when the widget is long pressed.
+  final VoidCallback? onLongPress;
+
+  /// Called when user taps outside the field.
+  ///
+  /// See [PinInput.onTapOutside] for more details.
+  final void Function(PointerDownEvent event)? onTapOutside;
+
+  /// The mouse cursor to show when hovering over the widget.
+  ///
+  /// Defaults to [SystemMouseCursors.text] when enabled.
+  final MouseCursor? mouseCursor;
+
   /// The brightness of the keyboard.
   final Brightness? keyboardAppearance;
 
@@ -253,6 +291,11 @@ class PinInputFormField extends FormField<String> {
 
   /// Action to perform when autofill context is disposed.
   final AutofillContextAction autofillContextAction;
+
+  /// Semantic label for accessibility.
+  ///
+  /// See [PinInput.semanticLabel] for more details.
+  final String? semanticLabel;
 
   /// Space between PIN input and error text.
   final double errorTextSpace;
